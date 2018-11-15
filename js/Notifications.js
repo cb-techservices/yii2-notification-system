@@ -1,11 +1,11 @@
-(function ( $ ) {
-	
-	
- 
-    $.fn.Notifications = function(options) {
+//(function ( $ ) {
+
+	var Notifications = (function(options) {
     	
-    	function notify(){
-    		
+//		function notify(){ //This syntax makes the function callable only from within the class.
+    	this.notify = function(){ //This syntax makes the function callable by the object (this)
+    		// Display an info toast with no title
+    		toastr.info('Are you the 6 fingered man?')
     	}
     	
     	/**
@@ -42,9 +42,10 @@
                 return elem;
             }
         }, options);
-
+        
+//        notify();
         
         return this;
-    };
+    });
  
-}( jQuery ));
+//}( jQuery ));

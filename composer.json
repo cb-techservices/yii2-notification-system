@@ -1,5 +1,5 @@
 {
-	"name" : "cb-techservices/yii2-notification-system",
+	"name" : "cbtech/yii2-notification-system",
 	"description" : "Yii2 extension which provides a fully functional notification system with customizable UI.",
 	"type" : "yii2-extension",
 	"keywords" : [
@@ -16,7 +16,8 @@
 		}
 	],
 	"require" : {
-		"yiisoft/yii2" : "~2.0.0"
+		"yiisoft/yii2" : "~2.0.0",
+		"bower-asset/toastr": "^2.1"
 	},
 	"autoload" : {
 		"psr-4" : {

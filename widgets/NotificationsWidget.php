@@ -23,22 +23,22 @@ class NotificationsWidget extends Widget
     public $button_class;
     public $button_style;
 
-//     public function init()
-//     {
-//         parent::init();
+    public function init()
+    {
+        parent::init();
         
-//         //Load AppAssets
+        //Load AppAssets
 //         AppAsset::register($this->view);
-//     }
+    }
 
 	/**
      * @inheritdoc
      */
     public function run()
     {
-        if (!isset($this->timeAgoLocale)) {
-            $this->timeAgoLocale = Yii::$app->language;
-        }
+//         if (!isset($this->timeAgoLocale)) {
+//             $this->timeAgoLocale = Yii::$app->language;
+//         }
         $this->registerAssets();
     }
     
@@ -49,7 +49,7 @@ class NotificationsWidget extends Widget
     public function registerAssets()
     {
         $view = $this->getView();
-        $asset = NotificationAsset::register($view);
+        NotificationAsset::register($view);
         // Register the theme assets
 //         if (!is_null($this->theme)) {
 //             if (!in_array($this->theme, self::$_builtinThemes)) {
@@ -70,39 +70,40 @@ class NotificationsWidget extends Widget
 //                 'depends' => NotificationAsset::className()
 //             ]);
 //         }
-        $params = [
-            'url' => Url::to(['/notifications/notifications/poll']),
-            'xhrTimeout' => Html::encode($this->xhrTimeout),
-            'delay' => Html::encode($this->delay),
-            'options' => $this->clientOptions,
-            'pollSeen' => !!$this->pollSeen,
-            'pollInterval' => Html::encode($this->pollInterval),
-            'counters' => $this->counters,
-        ];
-        if ($this->theme) {
-            $params['theme'] = Html::encode($this->theme);
-        }
-        if ($this->markAllSeenSelector) {
-            $params['markAllSeenSelector'] = $this->markAllSeenSelector;
-            $params['seenAllUrl'] = Url::to(['/notifications/notifications/read-all']);
-        }
-        if ($this->deleteAllSelector) {
-            $params['deleteAllSelector'] = $this->deleteAllSelector;
-            $params['deleteAllUrl'] = Url::to(['/notifications/notifications/delete-all']);
-        }
-        if ($this->listSelector) {
-            $params['seenUrl'] = Url::to(['/notifications/notifications/read']);
-            $params['deleteUrl'] = Url::to(['/notifications/notifications/delete']);
-            $params['flashUrl'] = Url::to(['/notifications/notifications/flash']);
-            $params['listSelector'] = $this->listSelector;
-            if ($this->listItemTemplate) {
-                $params['listItemTemplate'] = $this->listItemTemplate;
-            }
-            if ($this->listItemBeforeRender instanceof JsExpression) {
-                $params['listItemBeforeRender'] = $this->listItemBeforeRender;
-            }
-        }
-        $js = 'Notifications(' . Json::encode($params) . ');';
+			$params = [];
+//         $params = [
+//             'url' => Url::to(['/notifications/notifications/poll']),
+//             'xhrTimeout' => Html::encode($this->xhrTimeout),
+//             'delay' => Html::encode($this->delay),
+//             'options' => $this->clientOptions,
+//             'pollSeen' => !!$this->pollSeen,
+//             'pollInterval' => Html::encode($this->pollInterval),
+//             'counters' => $this->counters,
+//         ];
+//         if ($this->theme) {
+//             $params['theme'] = Html::encode($this->theme);
+//         }
+//         if ($this->markAllSeenSelector) {
+//             $params['markAllSeenSelector'] = $this->markAllSeenSelector;
+//             $params['seenAllUrl'] = Url::to(['/notifications/notifications/read-all']);
+//         }
+//         if ($this->deleteAllSelector) {
+//             $params['deleteAllSelector'] = $this->deleteAllSelector;
+//             $params['deleteAllUrl'] = Url::to(['/notifications/notifications/delete-all']);
+//         }
+//         if ($this->listSelector) {
+//             $params['seenUrl'] = Url::to(['/notifications/notifications/read']);
+//             $params['deleteUrl'] = Url::to(['/notifications/notifications/delete']);
+//             $params['flashUrl'] = Url::to(['/notifications/notifications/flash']);
+//             $params['listSelector'] = $this->listSelector;
+//             if ($this->listItemTemplate) {
+//                 $params['listItemTemplate'] = $this->listItemTemplate;
+//             }
+//             if ($this->listItemBeforeRender instanceof JsExpression) {
+//                 $params['listItemBeforeRender'] = $this->listItemBeforeRender;
+//             }
+//         }
+        $js = 'var notificationSystem = Notifications(' . Json::encode($params) . ');notificationSystem.notify();';
         $view->registerJs($js);
     }
 }
