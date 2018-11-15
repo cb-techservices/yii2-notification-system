@@ -3,12 +3,11 @@
 namespace cbtech\notification_system\assets;
 
 use yii\web\AssetBundle;
-use yii\web\View;
 
 /**
  * Main frontend application asset bundle.
  */
-class AppAsset extends AssetBundle
+class NotificationAsset extends AssetBundle
 {
     public $basePath = '@cbtech/notification_system';
     public $sourcePath = '@cbtech/notification_system';
@@ -16,13 +15,13 @@ class AppAsset extends AssetBundle
         
     ];
     public $js = [
-//     		'js/spin.js',
+    		'js/Notifications.js',
     ];
     public $jsOptions = [
     		"position"=>\yii\web\View::POS_HEAD
     ];
     public $depends = [
-//         'yii\web\YiiAsset',
-    		'frontend\assets\jQueryAsset',
+        'yii\web\JqueryAsset',
+//     	'yii\jui\JuiAsset',
     ];
 }

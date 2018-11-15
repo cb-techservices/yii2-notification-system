@@ -3,65 +3,167 @@
 // namespace frontend\modules\unsplash\controllers;
 namespace cbtech\notification_system\controllers;
 
+use Yii;
+use yii\helpers\Url;
 use yii\web\Controller;
-use Crew\Unsplash\Photo;
+use yii\web\HttpException;
+use yii\web\Response;
 
-/**
- * Ajax controller for the `unsplash` module
- */
+
 class NotificationsController extends Controller
 {
     /**
-     * Renders the index view for the module
-     * @return string
+     * @var integer The current user id
      */
-    public function actionSearch()
+    private $user_id;
+    /**
+     * @var string The notification class
+     */
+    private $notificationClass;
+    /**
+     * @inheritdoc
+     */
+    public function init()
     {
-    	\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-		
-    	$search = \Yii::$app->request->get('search');
-    	if($search == NULL){
-    		$search = "colors";
-    	}
-        $page = \Yii::$app->request->get('page');;
-        if($page == NULL){
-        	$page = 1;
-        }
-        $per_page = \Yii::$app->request->get('per_page');;
-        if($per_page == NULL){
-        	$per_page = 16;
-        }
-        $orientation = \Yii::$app->request->get('orientation');
-        if($orientation == NULL){
-        	$orientation = 'landscape';
-        }
-        
-        $pageResult = \Crew\Unsplash\Search::photos($search, $page, $per_page, $orientation);
-// 		\Yii::error(print_r(\Yii::$app->request->get('search')));
-		$utm_source = \Yii::$app->modules["unsplash"]->params['utmSource'];
-
-        $html = $this->renderPartial('/_images',[
-        		'pageResult'=>$pageResult,
-        		'search'=>$search,
-				'page'=>$page,
-				'per_page'=>$per_page,
-				'orientation'=>$orientation,
-        		'utm_source'=>$utm_source
-        ]);
-		
-		return ["returnCode"=>0,"returnCodeDescription"=>"Success","data"=>["html"=>$html]];
-//         return $this->render('index');
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $this->user_id = $this->module->userId;
+//         $this->notificationClass = $this->module->notificationClass;
+// 		$this->notificationClass = 
+        parent::init();
     }
-    
-    public function actionGetPhotoUrls($id){
-    	\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-    	
-    	$photo = Photo::find($id);
-    	$downloadUrl = $photo->download();
-//     	$thumbnailUrl = $photo->urls["thumb"];
-    	
-//     	\Yii::error(print_r($photo,true));
-    	
-    	return ["returnCode"=>0,"returnCodeDescription"=>"Success","data"=>["urls"=>$photo->urls,"downloadUrl"=>$downloadUrl]];
+    /**
+     * Poll action
+     *
+     * @param int $seen Whether to show already seen notifications
+     * @return array
+     */
+    public function actionPoll($read = 0)
+    {
+        $read = $read ? 'true' : 'false';
+        /** @var Notification $class */
+        $class = $this->notificationClass;
+        $models = $class::find()
+            ->where(['user_id' => $this->user_id])
+            ->andWhere(['or', "read=$read", 'flashed=false'])
+            ->orderBy('created_at DESC')
+            ->all();
+        $results = [];
+        foreach ($models as $model) {
+            // give user a chance to parse the date as needed
+            $date = date('Y-m-d H:i:s');
+            /** @var Notification $model */
+            $results[] = [
+                'id' => $model->id,
+                'type' => $model->type,
+                'title' => $model->getTitle(),
+                'description' => $model->getDescription(),
+                'url' => Url::to(['notifications/rnr', 'id' => $model->id]),
+                'key' => $model->key,
+            	'key_id' => $model->key_id,
+                'flashed' => $model->flashed,
+                'date' => $date,
+            ];
+        }
+        return $results;
+    }
+    /**
+     * Marks a notification as read and redirects the user to the final route
+     *
+     * @param int $id The notification id
+     * @return Response
+     * @throws HttpException Throws an exception if the notification is not
+     *         found, or if it don't belongs to the logged in user
+     */
+    public function actionRnr($id)
+    {
+        $notification = $this->actionRead($id);
+        return $this->redirect(Url::to($notification->getRoute()));
+    }
+    /**
+     * Marks a notification as read
+     *
+     * @param int $id The notification id
+     * @return Notification The updated notification record
+     * @throws HttpException Throws an exception if the notification is not
+     *         found, or if it don't belongs to the logged in user
+     */
+    public function actionRead($id)
+    {
+        $notification = $this->getNotification($id);
+        $notification->read = 1;
+        $notification->save();
+        return $notification;
+    }
+    /**
+     * Marks all notification as read
+     *
+     * @throws HttpException Throws an exception if the notification is not
+     *         found, or if it don't belongs to the logged in user
+     */
+    public function actionReadAll()
+    {
+        $notificationsIds = Yii::$app->request->post('ids', []);
+        foreach ($notificationsIds as $id) {
+            $notification = $this->getNotification($id);
+            $notification->read = 1;
+            $notification->save();
+        }
+        return true;
+    }
+    /**
+     * Delete all notifications
+     *
+     * @throws HttpException Throws an exception if the notification is not
+     *         found, or if it don't belongs to the logged in user
+     */
+    public function actionDeleteAll()
+    {
+        $notificationsIds = Yii::$app->request->post('ids', []);
+        foreach ($notificationsIds as $id) {
+            $notification = $this->getNotification($id);
+            $notification->delete();
+        }
+        return true;
+    }
+    /**
+     * Deletes a notification
+     *
+     * @param int $id The notification id
+     * @return int|false Returns 1 if the notification was deleted, FALSE otherwise
+     * @throws HttpException Throws an exception if the notification is not
+     *         found, or if it don't belongs to the logged in user
+     */
+    public function actionDelete($id)
+    {
+        $notification = $this->getNotification($id);
+        return $notification->delete();
+    }
+    public function actionFlash($id)
+    {
+        $notification = $this->getNotification($id);
+        $notification->flashed = 1;
+        $notification->save();
+        return $notification;
+    }
+    /**
+     * Gets a notification by id
+     *
+     * @param int $id The notification id
+     * @return Notification
+     * @throws HttpException Throws an exception if the notification is not
+     *         found, or if it don't belongs to the logged in user
+     */
+    private function getNotification($id)
+    {
+        /** @var Notification $notification */
+        $class = $this->notificationClass;
+        $notification = $class::findOne($id);
+        if (!$notification) {
+            throw new HttpException(404, "Unknown notification");
+        }
+        if ($notification->user_id != $this->user_id) {
+            throw new HttpException(500, "Not your notification");
+        }
+        return $notification;
     }
 }

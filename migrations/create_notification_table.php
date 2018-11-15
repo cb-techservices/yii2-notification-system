@@ -1,5 +1,6 @@
 <?php
 use yii\db\Migration;
+
 class create_notification_table extends Migration
 {
     const TABLE_NAME = '{{%notification}}';
@@ -10,7 +11,7 @@ class create_notification_table extends Migration
             'id' => $this->primaryKey(),
         	'user_id' => $this->integer()->notNull(),
             'key' => $this->string()->notNull(),
-//             'key_id' => $this->integer(),
+            'key_id' => $this->integer(),
             'type' => $this->string()->notNull(),
             'read' => $this->boolean()->notNull(),
         	'flashed' => $this->boolean()->notNull(),

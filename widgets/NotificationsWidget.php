@@ -3,10 +3,14 @@
 // namespace frontend\modules\unsplash;
 namespace cbtech\notification_system\widgets;
 
+use Yii;
 use yii\base\Widget;
 use yii\helpers\Html;
-use Crew\Unsplash\HttpClient;
-use cbtech\unsplash\assets\AppAsset;
+use cbtech\notification_system\assets\NotificationAsset;
+use yii\base\Exception;
+use yii\helpers\Url;
+use yii\web\JsExpression;
+use yii\helpers\Json;
 
 class NotificationsWidget extends Widget
 {
@@ -19,57 +23,86 @@ class NotificationsWidget extends Widget
     public $button_class;
     public $button_style;
 
-    public function init()
-    {
-        parent::init();
-        if ($this->message === null) {
-            $this->message = 'Hello World';
-        }
+//     public function init()
+//     {
+//         parent::init();
         
-        if($this->button_text === null){
-        	$this->button_text = "Choose photo from Unsplash";
-        }
-        
-    	if($this->button_class === null){
-        	$this->button_class = "btn btn-success";
-        }
-        
-        if($this->button_style === null){
-        	$this->button_style = "";
-        }
-        
-        
-        HttpClient::$utmSource = "LeP Photo Extension";
-        \Crew\Unsplash\HttpClient::init([
-			'applicationId'	=> \Yii::$app->modules["unsplash"]['params']['applicationId'],
-			'utmSource' => \Yii::$app->modules["unsplash"]['params']['utmSource'],
-		]);
-        $connection = HttpClient::$connection;
-        
-        //Load AppAssets
-        AppAsset::register($this->view);
-    }
+//         //Load AppAssets
+//         AppAsset::register($this->view);
+//     }
 
+	/**
+     * @inheritdoc
+     */
     public function run()
     {
-//     	\Yii::error(print_r($this->search()));
-		$result = $this->search($this->search,$this->page, $this->per_page, $this->orientation);
-//         return Html::encode($this->message);
-		return $this->render('picker',[
-				'pageResult'=>$result,
-				'search'=>$this->search,
-				'page'=>$this->page,
-				'per_page'=>$this->per_page,
-				'orientation'=>$this->orientation,
-				'button_text'=>$this->button_text,
-				'button_class'=>$this->button_class,
-				'button_style'=>$this->button_style,
-		]);
+        if (!isset($this->timeAgoLocale)) {
+            $this->timeAgoLocale = Yii::$app->language;
+        }
+        $this->registerAssets();
     }
     
-    public function search($search = 'colors', $page = 1, $per_page = 16, $orientation = 'landscape'){
-		$pageResult = \Crew\Unsplash\Search::photos($search, $page, $per_page, $orientation);
-// 		\Yii::error(print_r($pageResult,true));
-		return $pageResult;
+
+    /**
+     * Registers the needed assets
+     */
+    public function registerAssets()
+    {
+        $view = $this->getView();
+        $asset = NotificationAsset::register($view);
+        // Register the theme assets
+//         if (!is_null($this->theme)) {
+//             if (!in_array($this->theme, self::$_builtinThemes)) {
+//                 throw new Exception("Unknown theme: " . $this->theme, 501);
+//             }
+//             foreach (['js' => 'registerJsFile', 'css' => 'registerCssFile'] as $type => $method) {
+//                 $filename = NotificationAsset::getFilename($this->theme, $type);
+//                 if ($filename) {
+//                     $view->$method($asset->baseUrl . '/' . $filename, [
+//                         'depends' => NotificationAsset::className()
+//                     ]);
+//                 }
+//             }
+//         }
+//         // Register timeago i18n file
+//         if ($filename = NotificationAsset::getTimeAgoI18n($this->timeAgoLocale)) {
+//             $view->registerJsFile($asset->baseUrl . '/' . $filename, [
+//                 'depends' => NotificationAsset::className()
+//             ]);
+//         }
+        $params = [
+            'url' => Url::to(['/notifications/notifications/poll']),
+            'xhrTimeout' => Html::encode($this->xhrTimeout),
+            'delay' => Html::encode($this->delay),
+            'options' => $this->clientOptions,
+            'pollSeen' => !!$this->pollSeen,
+            'pollInterval' => Html::encode($this->pollInterval),
+            'counters' => $this->counters,
+        ];
+        if ($this->theme) {
+            $params['theme'] = Html::encode($this->theme);
+        }
+        if ($this->markAllSeenSelector) {
+            $params['markAllSeenSelector'] = $this->markAllSeenSelector;
+            $params['seenAllUrl'] = Url::to(['/notifications/notifications/read-all']);
+        }
+        if ($this->deleteAllSelector) {
+            $params['deleteAllSelector'] = $this->deleteAllSelector;
+            $params['deleteAllUrl'] = Url::to(['/notifications/notifications/delete-all']);
+        }
+        if ($this->listSelector) {
+            $params['seenUrl'] = Url::to(['/notifications/notifications/read']);
+            $params['deleteUrl'] = Url::to(['/notifications/notifications/delete']);
+            $params['flashUrl'] = Url::to(['/notifications/notifications/flash']);
+            $params['listSelector'] = $this->listSelector;
+            if ($this->listItemTemplate) {
+                $params['listItemTemplate'] = $this->listItemTemplate;
+            }
+            if ($this->listItemBeforeRender instanceof JsExpression) {
+                $params['listItemBeforeRender'] = $this->listItemBeforeRender;
+            }
+        }
+        $js = 'Notifications(' . Json::encode($params) . ');';
+        $view->registerJs($js);
     }
 }
