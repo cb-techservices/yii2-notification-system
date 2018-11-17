@@ -7,8 +7,6 @@
     		toastr.options.closeButton = true;
     		toastr.options.timeOut = this.opts.delay; // How long the toast will display without user interaction
     		toastr.options.extendedTimeOut = this.opts.delay; // How long the toast will display after a user hovers over it
-//    		toastr.options.timeOut = 0;
-//    		toastr.options.extendedTimeOut = 0;
     		
     		if(notification.type == 'default'){
     			toastr.info(notification.body, notification.title);
@@ -23,10 +21,12 @@
     		}
     		
     		//Mark as flashed since we're showing the notification with toastr.
-//    		flash(notification);
+    		flash(notification);
     		
     		// Define a callback for when the toast is shown/hidden/clicked
-//    		toastr.options.onShown = function() { console.log('hello'); }
+    		toastr.options.onShown = function() {
+//    			console.log('hello');
+    		}
 //    		toastr.options.onHidden = function() { console.log('goodbye'); }
     		toastr.options.onclick = function() { 
     			console.log('clicked');
@@ -97,6 +97,14 @@
         			console.log(json.responseJSON);
         			var notifications = json.responseJSON;
         			var rows = "";
+        			
+        			// Update all counters
+                for (var i = 0; i < opts.counters.length; i++) {
+                    if ($(opts.counters[i]).text() != notifications.length) {
+                        $(opts.counters[i]).text(notifications.length);
+                    }
+                }
+        			
         			for(i in notifications){
         				var notification = notifications[i];
         				if(notification.flashed == 0){
@@ -150,7 +158,15 @@
         }
         
         this.renderRow = function(notification){
-        		var html = "<div class=''>" + self.opts.listItemTemplate + "</div>";
+        		var html = "";
+        		if(notification.url != null && notification.url != ""){
+        			html += "<div onclick='window.location=\"" + notification.url + "\"'>";
+        		}else{
+        			html += "<div>";
+        		}
+        		
+        		html += self.opts.listItemTemplate; 
+        		html += "</div>";
         		html = html.replace(/\{id}/g, notification.id);
         		html = html.replace(/\{title}/g, notification.title);
         		html = html.replace(/\{body}/g, notification.body);
