@@ -22,7 +22,13 @@ class NotificationAsset extends AssetBundle
     ];
     public $depends = [
         'yii\web\JqueryAsset',
-    	'cbtech\notification_system\assets\ToastrAsset'
+    		'cbtech\notification_system\assets\ToastrAsset'
 //     	'yii\jui\JuiAsset',
+    ];
+    public $publishOptions = [
+    		'only'=>[
+    			'js/*',
+    			'css/*'
+    		]
     ];
 }

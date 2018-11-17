@@ -5,8 +5,8 @@ namespace cbtech\notification_system;
 
 use Yii;
 use yii\base\Exception;
-use cbtech\notification_system\models\Notification;
 use yii\db\Expression;
+use cbtech\notification_system\models\NotificationBase;
 
 /**
  * unsplash module definition class
@@ -65,7 +65,7 @@ class NotificationSystemModule extends \yii\base\Module
         if (!in_array($key, $notification::$keys)) {
             throw new Exception("Not a registered notification key: $key");
         }
-        if (!in_array($type, Notification::$types)) {
+        if (!in_array($type, NotificationBase::$types)) {
             throw new Exception("Unknown notification type: $type");
         }
         /** @var Notification $instance */
@@ -74,7 +74,7 @@ class NotificationSystemModule extends \yii\base\Module
             $instance = new $notification([
                 'key' => $key,
                 'type' => $type,
-                'seen' => 0,
+                'read' => 0,
                 'flashed' => 0,
                 'user_id' => $user_id,
                 'key_id' => (string)$key_id,

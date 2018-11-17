@@ -8,6 +8,7 @@ use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\Response;
+use cbtech\notification_system\models\Notification;
 
 
 class NotificationsController extends Controller
@@ -27,8 +28,8 @@ class NotificationsController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $this->user_id = $this->module->userId;
-//         $this->notificationClass = $this->module->notificationClass;
-// 		$this->notificationClass = 
+        $this->notificationClass = $this->module->notificationClass;
+// 		$this->notificationClass = Notification::className();
         parent::init();
     }
     /**
@@ -39,31 +40,36 @@ class NotificationsController extends Controller
      */
     public function actionPoll($read = 0)
     {
-        $read = $read ? 'true' : 'false';
+//     		\Yii::error($this->notificationClass);
+//         $read = $read ? 1 : 0;
+//         \Yii::error($read);
         /** @var Notification $class */
         $class = $this->notificationClass;
         $models = $class::find()
             ->where(['user_id' => $this->user_id])
-            ->andWhere(['or', "read=$read", 'flashed=false'])
+            ->andWhere(['or', ["read"=>intval($read)], ['flashed'=>0]])
             ->orderBy('created_at DESC')
             ->all();
         $results = [];
+//         \Yii::error(print_r($models,true));
         foreach ($models as $model) {
             // give user a chance to parse the date as needed
-            $date = date('Y-m-d H:i:s');
+//             $date = date('Y-m-d H:i:s');
             /** @var Notification $model */
             $results[] = [
                 'id' => $model->id,
                 'type' => $model->type,
                 'title' => $model->getTitle(),
-                'description' => $model->getDescription(),
+                'body' => $model->getBody(),
                 'url' => Url::to(['notifications/rnr', 'id' => $model->id]),
                 'key' => $model->key,
-            	'key_id' => $model->key_id,
+           	 	'key_id' => $model->key_id,
                 'flashed' => $model->flashed,
-                'date' => $date,
+                'date' => $model->created_at,
             ];
         }
+        
+//         \Yii::error(print_r($results,true));
         return $results;
     }
     /**

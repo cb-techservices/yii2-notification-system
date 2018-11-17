@@ -14,14 +14,60 @@ use yii\helpers\Json;
 
 class NotificationsWidget extends Widget
 {
-    public $message;
-    public $search;
-    public $page;
-    public $per_page;
-    public $orientation;
-    public $button_text;
-    public $button_class;
-    public $button_style;
+	public $pollUrl = '/notifications/notifications/poll';
+	public $markAsReadUrl = '/notifications/notifications/read';
+	public $deleteUrl = '/notifications/notifications/delete';
+	public $flashUrl = '/notifications/notifications/flash';
+	
+	/**
+     * @var array additional options to be passed to the notification library.
+     * Please refer to the plugin project page for available options.
+     */
+    public $clientOptions = [];
+//     /**
+//      * @var string the library name to be used for notifications
+//      * One of the THEME_XXX constants
+//      */
+//     public $theme = null;
+    /**
+     * @var integer The time to leave the notification shown on screen
+     */
+    public $delay = 5000;
+    /**
+     * @var integer the XHR timeout in milliseconds
+     */
+    public $xhrTimeout = 2000;
+    /**
+     * @var integer The delay between pulls
+     */
+    public $pollInterval = 5000;
+     /**
+     * @var array An array of jQuery selector to be updated with the current
+     *            notifications count
+     */
+    public $counters = [];
+     /**
+     * @var string A jQuery selector on which click mark all seen event
+     *             will be fired
+     */
+    public $markAllSeenSelector = null;
+    public $seenAllUrl = '/notifications/notifications/read-all';
+    /**
+     * @var string A jQuery selector on which click delete all event
+     *             will be fired
+     */
+    public $deleteAllSelector = null;
+    public $deleteAllUrl = '/notifications/notifications/delete-all';
+    /**
+     * @var string The jQuery selector in which the notifications list should
+     *             be rendered
+     */
+    public $listSelector = null;
+    /**
+     * @var string The list item HTML template
+     */
+    public $listItemTemplate = null;
+	
 
     public function init()
     {
@@ -70,40 +116,42 @@ class NotificationsWidget extends Widget
 //                 'depends' => NotificationAsset::className()
 //             ]);
 //         }
-			$params = [];
-//         $params = [
-//             'url' => Url::to(['/notifications/notifications/poll']),
-//             'xhrTimeout' => Html::encode($this->xhrTimeout),
-//             'delay' => Html::encode($this->delay),
-//             'options' => $this->clientOptions,
-//             'pollSeen' => !!$this->pollSeen,
-//             'pollInterval' => Html::encode($this->pollInterval),
-//             'counters' => $this->counters,
-//         ];
+			
+        $params = [
+            'pollUrl' => $this->pollUrl,
+            'xhrTimeout' => Html::encode($this->xhrTimeout),
+            'delay' => Html::encode($this->delay),
+            'options' => $this->clientOptions,
+//             'pollSeen' => $this->pollSeen,
+            'pollInterval' => Html::encode($this->pollInterval),
+            'counters' => $this->counters,
+        ];
+        
+        $params['markAsReadUrl'] = $this->markAsReadUrl;
+	    $params['deleteUrl'] = $this->deleteUrl;
+		$params['flashUrl'] = $this->flashUrl;
 //         if ($this->theme) {
 //             $params['theme'] = Html::encode($this->theme);
 //         }
-//         if ($this->markAllSeenSelector) {
-//             $params['markAllSeenSelector'] = $this->markAllSeenSelector;
-//             $params['seenAllUrl'] = Url::to(['/notifications/notifications/read-all']);
-//         }
-//         if ($this->deleteAllSelector) {
-//             $params['deleteAllSelector'] = $this->deleteAllSelector;
-//             $params['deleteAllUrl'] = Url::to(['/notifications/notifications/delete-all']);
-//         }
-//         if ($this->listSelector) {
-//             $params['seenUrl'] = Url::to(['/notifications/notifications/read']);
-//             $params['deleteUrl'] = Url::to(['/notifications/notifications/delete']);
-//             $params['flashUrl'] = Url::to(['/notifications/notifications/flash']);
-//             $params['listSelector'] = $this->listSelector;
-//             if ($this->listItemTemplate) {
-//                 $params['listItemTemplate'] = $this->listItemTemplate;
-//             }
+        if ($this->markAllSeenSelector) {
+            $params['markAllSeenSelector'] = $this->markAllSeenSelector;
+            $params['seenAllUrl'] = $this->seenAllUrl;
+        }
+        if ($this->deleteAllSelector) {
+            $params['deleteAllSelector'] = $this->deleteAllSelector;
+            $params['deleteAllUrl'] = $this->deleteAllUrl;
+        }
+        if ($this->listSelector) {
+            $params['listSelector'] = $this->listSelector;
+            if ($this->listItemTemplate) {
+                $params['listItemTemplate'] = $this->listItemTemplate;
+            }
 //             if ($this->listItemBeforeRender instanceof JsExpression) {
 //                 $params['listItemBeforeRender'] = $this->listItemBeforeRender;
 //             }
-//         }
-        $js = 'var notificationSystem = Notifications(' . Json::encode($params) . ');notificationSystem.notify();';
+        }
+        $js = 'var notificationSystem = Notifications(' . Json::encode($params,JSON_PRETTY_PRINT) . ');
+notificationSystem.poll();';
         $view->registerJs($js);
     }
 }
