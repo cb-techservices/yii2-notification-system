@@ -9,39 +9,47 @@
     		toastr.options.closeButton = true;
     		toastr.options.timeOut = this.opts.delay; // How long the toast will display without user interaction
     		toastr.options.extendedTimeOut = this.opts.delay; // How long the toast will display after a user hovers over it
+    		toastr.options.tapToDismiss = false;
     		
-    		if(notification.type == 'default'){
-    			toastr.info(notification.body, notification.title);
-    		}else if(notification.type == 'success'){
-    			toastr.success(notification.body, notification.title);
-    		}else if(notification.type == 'warning'){
-    			toastr.warning(notification.body, notification.title);
-    		}else if(notification.type == 'error'){
-    			toastr.error(notification.body, notification.title);
-    		}else{
-    			toastr.info(notification.body, notification.title);
-    		}
+    		var body = notification.body + notification.footer;
     		
     		//Mark as flashed since we're showing the notification with toastr.
-    		flash(notification);
+//    		flash(notification);
     		
     		// Define a callback for when the toast is shown/hidden/clicked
-    		toastr.options.onShown = function() {
-//    			console.log('hello');
-    		}
-//    		toastr.options.onHidden = function() { console.log('goodbye'); }
-    		toastr.options.onclick = function() { 
-    			console.log('clicked');
-    			if(notification.url != null && notification.url != ""){
-    				window.location = notification.url;
-    			}
-    			//mark as read
-    			markAsRead(notification.id);
-    		}
-    		toastr.options.onCloseClick = function() { 
-    			console.log('close button clicked');
-    			//mark as read
-    			markAsRead(notification.id);
+//    		toastr.options.onShown = function() {
+////    			console.log('hello');
+//    		}
+//    		toastr.options.onHidden = function() {
+//    			console.log('goodbye');
+//    			//mark as read
+////    			markAsRead(notification.id);
+//    		}
+//    		toastr.options.onclick = null;
+//    		toastr.options.onclick = function(e) { 
+//    			console.log('clicked');
+//    			//mark as read
+////    			markAsRead(notification.id);
+//    			e.stopPropagation();
+////    			if(notification.url != null && notification.url != ""){
+////    				window.location = notification.url;
+////    			}
+//    		}
+//    		toastr.options.onCloseClick = function() { 
+//    			console.log('close button clicked');
+//    			
+//    		}
+    		
+    		if(notification.type == 'default'){
+    			toastr.info(body, notification.title);
+    		}else if(notification.type == 'success'){
+    			toastr.success(body, notification.title);
+    		}else if(notification.type == 'warning'){
+    			toastr.warning(body, notification.title);
+    		}else if(notification.type == 'error'){
+    			toastr.error(body, notification.title);
+    		}else{
+    			toastr.info(body, notification.title);
     		}
     	}
     	
@@ -67,17 +75,20 @@
             viewAllSelector: null,
             listSelector: null,
             listItemTemplate:
-                '<div class="notificationRow" id="notification_{id}">' +
-                    '<div class="col-xs-10">' +
-                        '<div class="title">{title}</div>' +
-                        '<div class="body">{body}</div>' +
-                        
+                '<div class="notificationRow row" id="notification_{id}" data-keepOpenOnClick>' +
+                    '<div class="col-xs-10" onclick="goToRoute(\'{id}\');">' +
+                        '<div class="notification-title">{title}</div>' +
+                        '<div class="notification-body">{body}</div>' +
                     '</div>' +
                     '<div class="col-xs-2">' +
-                        '<div class="actions pull-right">{read}{delete}</div>' +
-                        '<div class="timeago pull-right">{timeago}</div>' +
+                    	'<div class="notification-timeago pull-right">{timeago}</div>' +
+                        '<div class="notification-actions pull-right">{read}{delete}</div>' +
                     '</div>' +
                     '<div class="clearfix"></div>' + 
+                    '<div class="col-xs-12">' +
+	                    '<div class="notification-footer">{footer}</div>' +
+	                '</div>' +
+	                '<div class="clearfix"></div>' + 
                     '<hr/>' +
                 '</div>',
             listItemBeforeRender: function (elem) {
@@ -194,19 +205,23 @@
     		});
         }
         
+        this.goToRoute = function(id){
+        	var index = getNotificationIndex(id);
+        	var notification = currentNotifications[index];
+        	if(notification.url != null && notification.url != ""){
+        		window.location = notification.url;
+        	}
+        }
+        
         this.renderRow = function(notification){
     		var html = "";
-    		if(notification.url != null && notification.url != ""){
-    			html += "<div >";
-    		}else{
-    			html += "<div>";
-    		}
     		
     		html += self.opts.listItemTemplate; 
-    		html += "</div>";
     		html = html.replace(/\{id}/g, notification.id);
     		html = html.replace(/\{title}/g, notification.title);
     		html = html.replace(/\{body}/g, notification.body);
+    		html = html.replace(/\{url}/g, notification.url);
+    		html = html.replace(/\{footer}/g, notification.footer);
     		html = html.replace(/\{read}/g, '<span onclick="markAsRead(' + notification.id + ');" class="notification-seen glyphicon glyphicon-ok" data-keepOpenOnClick></span>');
     		html = html.replace(/\{delete}/g, '<span onclick="" class="notification-delete glyphicon glyphicon-remove" data-keepOpenOnClick></span>');
 //            html = html.replace(/\{timeago}/g, '<span class="notification-timeago">' + notification.timeago +'</span>');
@@ -217,7 +232,7 @@
 //        notify();
         
         $(document).ready(function(){
-    		$(document).delegate("ul.dropdown-menu [data-keepOpenOnClick]", "click", function(e) {
+    		$(document).delegate("[data-keepOpenOnClick]", "click", function(e) {
     			e.stopPropagation();
     		});
     		

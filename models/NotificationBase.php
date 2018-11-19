@@ -76,6 +76,12 @@ abstract class NotificationBase extends \yii\db\ActiveRecord
      */
     abstract public function getBody();
     /**
+     * Gets the notification footer
+     *
+     * @return string
+     */
+    abstract public function getFooter();
+    /**
      * Gets the notification route
      *
      * @return string
