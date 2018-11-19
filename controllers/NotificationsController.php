@@ -38,18 +38,22 @@ class NotificationsController extends Controller
      * @param int $seen Whether to show already seen notifications
      * @return array
      */
-    public function actionPoll($read = 0)
+    public function actionPoll($all = 0)
     {
 //     		\Yii::error($this->notificationClass);
 //         $read = $read ? 1 : 0;
 //         \Yii::error($read);
         /** @var Notification $class */
         $class = $this->notificationClass;
-        $models = $class::find()
-            ->where(['user_id' => $this->user_id])
-            ->andWhere(['or', ["read"=>intval($read)], ['flashed'=>0]])
-            ->orderBy('created_at DESC')
-            ->all();
+        $models = $class::find()->where(['user_id' => $this->user_id]);
+		if($all == 0){
+        	$models->andWhere(['or', ["read"=>0], ['flashed'=>0]]);			
+		}else{
+			$models->andWhere(['or', ["read"=>0],["read"=>1], ['flashed'=>0]]);	
+		}
+		$models = $models->orderBy('created_at DESC')
+						 ->all();
+		
         $results = [];
 //         \Yii::error(print_r($models,true));
         foreach ($models as $model) {
@@ -65,6 +69,7 @@ class NotificationsController extends Controller
                 'key' => $model->key,
            	 	'key_id' => $model->key_id,
                 'flashed' => $model->flashed,
+            	'read' => $model->read,
                 'date' => $model->created_at,
             ];
         }

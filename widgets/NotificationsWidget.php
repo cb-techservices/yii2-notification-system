@@ -67,6 +67,10 @@ class NotificationsWidget extends Widget
      * @var string The list item HTML template
      */
     public $listItemTemplate = null;
+    
+    public $viewAllSelector = null;
+    
+    public $viewUnreadSelector = null;
 	
 
     public function init()
@@ -150,8 +154,17 @@ class NotificationsWidget extends Widget
 //                 $params['listItemBeforeRender'] = $this->listItemBeforeRender;
 //             }
         }
+        
+        if($this->viewAllSelector){
+        	$params["viewAllSelector"] = $this->viewAllSelector;
+        }
+        
+         if($this->viewUnreadSelector){
+        	$params["viewUnreadSelector"] = $this->viewUnreadSelector;
+        }
+        
         $js = 'var notificationSystem = Notifications(' . Json::encode($params,JSON_PRETTY_PRINT) . ');
-notificationSystem.poll();';
+notificationSystem.poll(0);';
         $view->registerJs($js);
     }
 }

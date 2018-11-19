@@ -1,6 +1,8 @@
 //(function ( $ ) {
 
 	var Notifications = (function(options) {
+		
+		this.currentNotifications = [];
     	
 //		function notify(){ //This syntax makes the function callable only from within the class.
     	this.notify = function(notification){ //This syntax makes the function callable by the object (this)
@@ -62,6 +64,7 @@
             counters: [],
             markAllSeenSelector: null,
             deleteAllSelector: null,
+            viewAllSelector: null,
             listSelector: null,
             listItemTemplate:
                 '<div class="notificationRow" id="notification_{id}">' +
@@ -82,55 +85,87 @@
             }
         }, options);
         
-        this.poll = function(){
-        		$.ajax({
-        			url: this.opts.pollUrl,
-        			method: "GET",
-        			data: {read:0},
-        			dataType: "json",
-//        			complete: setTimeout(function() {
-//        				self.poll(this.opts)
+        this.poll = function(all=0){
+    		$.ajax({
+    			url: this.opts.pollUrl,
+    			method: "GET",
+    			data: {all:all},
+    			dataType: "json",
+//        		complete: setTimeout(function() {
+//        			self.poll(all)
 //                }, this.opts.pollInterval),
 //                timeout: opts.xhrTimeout
-        		})
-        		.complete(function(json){
-        			console.log(json.responseJSON);
-        			var notifications = json.responseJSON;
-        			var rows = "";
-        			
-        			// Update all counters
-                for (var i = 0; i < opts.counters.length; i++) {
-                    if ($(opts.counters[i]).text() != notifications.length) {
-                        $(opts.counters[i]).text(notifications.length);
-                    }
+    		})
+    		.done(function(data, textStatus, jqXHR){
+    			var notifications = jqXHR.responseJSON;
+    			currentNotifications = notifications;
+    			processNotifications();
+    		});
+        }
+        
+        this.processNotifications = function(){
+        	var rows = "";
+			
+			updateCounters();
+			
+			for(i in currentNotifications){
+				var notification = currentNotifications[i];
+				if(notification.flashed == 0){
+					notify(notification);
+				}
+				rows += renderRow(notification);
+			}
+			if(opts.listSelector != null && opts.listSelector != ""){
+				$(opts.listSelector).empty().append(rows);
+			}
+        }
+        
+        this.updateCounters = function(){
+        	var unreadCount = countUnread();
+        	// Update all counters
+            for (var i = 0; i < opts.counters.length; i++) {
+                if ($(opts.counters[i]).text() != unreadCount) {
+                    $(opts.counters[i]).text(unreadCount);
                 }
-        			
-        			for(i in notifications){
-        				var notification = notifications[i];
-        				if(notification.flashed == 0){
-        					notify(notification);
-        				}
-        				rows += renderRow(notification);
-        			}
-        			if(opts.listSelector != null && opts.listSelector != ""){
-        				$(opts.listSelector).empty().append(rows);
-        			}
-        		});
+            }
+        }
+        
+        this.countUnread = function(){
+        	var count = 0;
+        	for(i in currentNotifications){
+        		var notification = currentNotifications[i];
+        		if(notification.read == 0){
+        			count += 1;
+        		}
+        	}
+        	return count;
+        }
+        
+        this.getNotificationIndex = function(id){
+        	for(i in currentNotifications){
+        		if(currentNotifications[i].id == id){
+        			return i;
+        		}
+        	}
         }
         
         this.markAsRead = function(id){
-        		console.log(id);
-        		$.ajax({
-        			url: this.opts.markAsReadUrl,
-        			method: "GET",
-        			data: {id:id},
-        			dataType: "json"
-        		})
-        		.complete(function(json){
-        			if($("#notification_"+id).length){
-        				$("#notification_"+id).slideUp();
-        			}
-        		});
+    		console.log(id);
+    		$.ajax({
+    			url: this.opts.markAsReadUrl,
+    			method: "GET",
+    			data: {id:id},
+    			dataType: "json"
+    		})
+    		.done(function(data, textStatus, jqXHR){
+    			if($("#notification_"+id).length){
+    				$("#notification_"+id).slideUp();
+    			}
+    			//Remove the notification from the currentNotifications array.
+    			var index = getNotificationIndex(id);
+    			currentNotifications.splice(index,1);
+    			updateCounters();
+    		});
         }
         
         this.markAsUnread = function(){
@@ -146,32 +181,34 @@
         }
         
         this.flash = function(notification){
-	        	$.ajax({
-	    			url: this.opts.flashUrl,
-	    			method: "GET",
-	    			data: {id:notification.id},
-	    			dataType: "json"
-	    		})
-	    		.complete(function(json){
-	    			
-	    		});
+        	$.ajax({
+    			url: this.opts.flashUrl,
+    			method: "GET",
+    			data: {id:notification.id},
+    			dataType: "json"
+    		})
+    		.done(function(data, textStatus, jqXHR){
+    			//Update reference in currentNotifications array.
+    			var index = getNotificationIndex(notification.id);
+    			currentNotifications[index].flashed = 1;
+    		});
         }
         
         this.renderRow = function(notification){
-        		var html = "";
-        		if(notification.url != null && notification.url != ""){
-        			html += "<div onclick='window.location=\"" + notification.url + "\"'>";
-        		}else{
-        			html += "<div>";
-        		}
-        		
-        		html += self.opts.listItemTemplate; 
-        		html += "</div>";
-        		html = html.replace(/\{id}/g, notification.id);
-        		html = html.replace(/\{title}/g, notification.title);
-        		html = html.replace(/\{body}/g, notification.body);
-        		html = html.replace(/\{read}/g, '<span onclick="markAsRead(' + notification.id + ');" class="notification-seen glyphicon glyphicon-ok" data-keepOpenOnClick></span>');
-            html = html.replace(/\{delete}/g, '<span onclick="" class="notification-delete glyphicon glyphicon-remove" data-keepOpenOnClick></span>');
+    		var html = "";
+    		if(notification.url != null && notification.url != ""){
+    			html += "<div >";
+    		}else{
+    			html += "<div>";
+    		}
+    		
+    		html += self.opts.listItemTemplate; 
+    		html += "</div>";
+    		html = html.replace(/\{id}/g, notification.id);
+    		html = html.replace(/\{title}/g, notification.title);
+    		html = html.replace(/\{body}/g, notification.body);
+    		html = html.replace(/\{read}/g, '<span onclick="markAsRead(' + notification.id + ');" class="notification-seen glyphicon glyphicon-ok" data-keepOpenOnClick></span>');
+    		html = html.replace(/\{delete}/g, '<span onclick="" class="notification-delete glyphicon glyphicon-remove" data-keepOpenOnClick></span>');
 //            html = html.replace(/\{timeago}/g, '<span class="notification-timeago">' + notification.timeago +'</span>');
             
             return html;
@@ -180,9 +217,21 @@
 //        notify();
         
         $(document).ready(function(){
-        		$(document).delegate("ul.dropdown-menu [data-keepOpenOnClick]", "click", function(e) {
-        			e.stopPropagation();
-        		});
+    		$(document).delegate("ul.dropdown-menu [data-keepOpenOnClick]", "click", function(e) {
+    			e.stopPropagation();
+    		});
+    		
+    		if(self.opts.viewAllSelector != null && self.opts.viewAllSelector != ""){
+    			$(self.opts.viewAllSelector).click(function(){
+    				poll(1); //Poll for all notifications.
+    			});
+    		}
+    		
+    		if(self.opts.viewUnreadSelector != null && self.opts.viewUnreadSelector != ""){
+    			$(self.opts.viewUnreadSelector).click(function(){
+    				poll(0); //Poll for unread notifications.
+    			});
+    		}
         });
         
         return this;
