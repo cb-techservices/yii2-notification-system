@@ -51,7 +51,7 @@ class NotificationsController extends Controller
 		}else{
 			$models->andWhere(['or', ["read"=>0],["read"=>1], ['flashed'=>0]]);	
 		}
-		$models = $models->orderBy('created_at DESC')
+		$models = $models->orderBy('read, created_at DESC')
 						 ->all();
 		
         $results = [];
@@ -121,6 +121,14 @@ class NotificationsController extends Controller
             $notification->save();
         }
         return true;
+    }
+    
+	public function actionUnread($id)
+    {
+        $notification = $this->getNotification($id);
+        $notification->read = 0;
+        $notification->save();
+        return $notification;
     }
     /**
      * Delete all notifications

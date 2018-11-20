@@ -16,6 +16,7 @@ class NotificationsWidget extends Widget
 {
 	public $pollUrl = '/notifications/notifications/poll';
 	public $markAsReadUrl = '/notifications/notifications/read';
+	public $markAsUnreadUrl = '/notifications/notifications/unread';
 	public $deleteUrl = '/notifications/notifications/delete';
 	public $flashUrl = '/notifications/notifications/flash';
 	
@@ -132,6 +133,7 @@ class NotificationsWidget extends Widget
         ];
         
         $params['markAsReadUrl'] = $this->markAsReadUrl;
+        $params['markAsUnreadUrl'] = $this->markAsUnreadUrl;
 	    $params['deleteUrl'] = $this->deleteUrl;
 		$params['flashUrl'] = $this->flashUrl;
 //         if ($this->theme) {

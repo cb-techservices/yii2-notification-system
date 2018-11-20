@@ -60,6 +60,7 @@
         this.opts = $.extend({
             pollUrl: '', // Overwritten by widget
             markAsReadUrl: '', // Overwritten by widget
+            markAsUnreadUrl: '', // Overwritten by widget
             seenAllUrl: '', // Overwritten by widget
             deleteUrl: '', // Overwritten by widget
             deleteAllUrl: '', // Overwritten by widget
@@ -82,7 +83,7 @@
                     '</div>' +
                     '<div class="col-xs-2">' +
                     	'<div class="notification-timeago pull-right">{timeago}</div>' +
-                        '<div class="notification-actions pull-right">{read}{delete}</div>' +
+                        '<div class="notification-actions pull-right">{read}{unread}</div>' +
                     '</div>' +
                     '<div class="clearfix"></div>' + 
                     '<div class="col-xs-12">' +
@@ -161,26 +162,43 @@
         }
         
         this.markAsRead = function(id){
-    		console.log(id);
-    		$.ajax({
-    			url: this.opts.markAsReadUrl,
-    			method: "GET",
-    			data: {id:id},
-    			dataType: "json"
-    		})
-    		.done(function(data, textStatus, jqXHR){
-    			if($("#notification_"+id).length){
-    				$("#notification_"+id).slideUp();
-    			}
-    			//Remove the notification from the currentNotifications array.
-    			var index = getNotificationIndex(id);
-    			currentNotifications.splice(index,1);
-    			updateCounters();
-    		});
+	    		console.log(id);
+	    		$.ajax({
+	    			url: this.opts.markAsReadUrl,
+	    			method: "GET",
+	    			data: {id:id},
+	    			dataType: "json"
+	    		})
+	    		.done(function(data, textStatus, jqXHR){
+	    			if($("#notification_read_"+id).length){
+	    				$("#notification_read_"+id).hide();
+	    				$("#notification_unread_"+id).show();
+	    			}
+	    			//Remove the notification from the currentNotifications array.
+	    			var index = getNotificationIndex(id);
+	    			currentNotifications.splice(index,1);
+	    			updateCounters();
+	    		});
         }
         
-        this.markAsUnread = function(){
-        	
+        this.markAsUnread = function(id){
+	        	console.log(id);
+	    		$.ajax({
+	    			url: this.opts.markAsUnreadUrl,
+	    			method: "GET",
+	    			data: {id:id},
+	    			dataType: "json"
+	    		})
+	    		.done(function(data, textStatus, jqXHR){
+	    			if($("#notification_read_"+id).length){
+	    				$("#notification_read_"+id).show();
+	    				$("#notification_unread_"+id).hide();
+	    			}
+	    			//Remove the notification from the currentNotifications array.
+	    			var index = getNotificationIndex(id);
+	    			currentNotifications.splice(index,1);
+	    			updateCounters();
+	    		});
         }
         
         this.markAllAsRead = function(){
@@ -192,25 +210,25 @@
         }
         
         this.flash = function(notification){
-        	$.ajax({
-    			url: this.opts.flashUrl,
-    			method: "GET",
-    			data: {id:notification.id},
-    			dataType: "json"
-    		})
-    		.done(function(data, textStatus, jqXHR){
-    			//Update reference in currentNotifications array.
-    			var index = getNotificationIndex(notification.id);
-    			currentNotifications[index].flashed = 1;
-    		});
+	        	$.ajax({
+	    			url: this.opts.flashUrl,
+	    			method: "GET",
+	    			data: {id:notification.id},
+	    			dataType: "json"
+	    		})
+	    		.done(function(data, textStatus, jqXHR){
+	    			//Update reference in currentNotifications array.
+	    			var index = getNotificationIndex(notification.id);
+	    			currentNotifications[index].flashed = 1;
+	    		});
         }
         
         this.goToRoute = function(id){
-        	var index = getNotificationIndex(id);
-        	var notification = currentNotifications[index];
-        	if(notification.url != null && notification.url != ""){
-        		window.location = notification.url;
-        	}
+	        	var index = getNotificationIndex(id);
+	        	var notification = currentNotifications[index];
+	        	if(notification.url != null && notification.url != ""){
+	        		window.location = notification.url;
+	        	}
         }
         
         this.renderRow = function(notification){
@@ -222,8 +240,13 @@
     		html = html.replace(/\{body}/g, notification.body);
     		html = html.replace(/\{url}/g, notification.url);
     		html = html.replace(/\{footer}/g, notification.footer);
-    		html = html.replace(/\{read}/g, '<span onclick="markAsRead(' + notification.id + ');" class="notification-seen glyphicon glyphicon-ok" data-keepOpenOnClick></span>');
-    		html = html.replace(/\{delete}/g, '<span onclick="" class="notification-delete glyphicon glyphicon-remove" data-keepOpenOnClick></span>');
+    		if(notification.read == 1){
+    			html = html.replace(/\{read}/g, '<button id="notification_read_'+ notification.id + '" style="display:none;" onclick="markAsRead(' + notification.id + ');" class="notification-read" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as read" data-keepOpenOnClick></button>');
+        		html = html.replace(/\{unread}/g, '<button id="notification_unread_'+ notification.id + '" onclick="markAsUnread(' + notification.id + ');" class="notification-unread" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as unread" data-keepOpenOnClick></button>');
+    		}else{
+    			html = html.replace(/\{read}/g, '<button id="notification_read_'+ notification.id + '" onclick="markAsRead(' + notification.id + ');" class="notification-read" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as read" data-keepOpenOnClick></button>');
+        		html = html.replace(/\{unread}/g, '<button id="notification_unread_'+ notification.id + '" style="display:none;" onclick="markAsUnread(' + notification.id + ');" class="notification-unread" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as unread" data-keepOpenOnClick></button>');
+    		}
 //            html = html.replace(/\{timeago}/g, '<span class="notification-timeago">' + notification.timeago +'</span>');
             
             return html;

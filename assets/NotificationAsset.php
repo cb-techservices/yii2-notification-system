@@ -12,7 +12,7 @@ class NotificationAsset extends AssetBundle
     public $basePath = '@cbtech/notification_system';
     public $sourcePath = '@cbtech/notification_system';
     public $css = [
-
+		'css/notifications.css'
     ];
     public $js = [
     		'js/Notifications.js'
@@ -22,8 +22,8 @@ class NotificationAsset extends AssetBundle
     ];
     public $depends = [
         'yii\web\JqueryAsset',
-    	'cbtech\notification_system\assets\ToastrAsset'
-//     	'yii\jui\JuiAsset',
+    		'cbtech\notification_system\assets\ToastrAsset',
+    		'yii\bootstrap\BootstrapPluginAsset'
     ];
     public $publishOptions = [
     		'forceCopy' => true,

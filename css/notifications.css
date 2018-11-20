@@ -1,0 +1,15 @@
+.notification-read{
+	width:16px;
+	height:16px;
+	border-radius:8px;
+	border:1px #3399ff solid;
+	background-color: #3399ff;
+}
+
+.notification-unread{
+	width:16px;
+	height:16px;
+	border-radius:8px;
+	border: 3px #3399ff solid;
+	background-color: white;
+}
