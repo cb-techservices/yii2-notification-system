@@ -70,7 +70,7 @@ class NotificationsController extends Controller
                 'key' => $model->key,
            	 	'key_id' => $model->key_id,
                 'flashed' => $model->flashed,
-            	'read' => $model->read,
+            		'read' => $model->read,
                 'date' => $model->created_at,
             ];
         }

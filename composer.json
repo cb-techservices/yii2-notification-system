@@ -17,7 +17,8 @@
 	],
 	"require" : {
 		"yiisoft/yii2" : "~2.0.0",
-		"bower-asset/toastr": "^2.1"
+		"bower-asset/toastr" : "^2.1",
+		"rmm5t/jquery-timeago" : "^1.6"
 	},
 	"autoload" : {
 		"psr-4" : {

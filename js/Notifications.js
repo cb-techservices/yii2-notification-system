@@ -247,7 +247,8 @@
     			html = html.replace(/\{read}/g, '<button id="notification_read_'+ notification.id + '" onclick="markAsRead(' + notification.id + ');" class="notification-read" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as read" data-keepOpenOnClick></button>');
         		html = html.replace(/\{unread}/g, '<button id="notification_unread_'+ notification.id + '" style="display:none;" onclick="markAsUnread(' + notification.id + ');" class="notification-unread" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as unread" data-keepOpenOnClick></button>');
     		}
-//            html = html.replace(/\{timeago}/g, '<span class="notification-timeago">' + notification.timeago +'</span>');
+    		
+    		html = html.replace(/\{timeago}/g, '<span class="notification-timeago">' + $.timeago(notification.date) +'</span>');
             
             return html;
         }
