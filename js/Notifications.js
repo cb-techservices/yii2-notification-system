@@ -61,9 +61,8 @@
             pollUrl: '', // Overwritten by widget
             markAsReadUrl: '', // Overwritten by widget
             markAsUnreadUrl: '', // Overwritten by widget
-            seenAllUrl: '', // Overwritten by widget
-            deleteUrl: '', // Overwritten by widget
-            deleteAllUrl: '', // Overwritten by widget
+            readAllUrl: '', // Overwritten by widget
+            unreadAllUrl: '', // Overwritten by widget
             flashUrl: '',
             pollInterval: 5000,
             pollSeen: false,
@@ -71,9 +70,10 @@
             delay: 5000,
             theme: null,
             counters: [],
-            markAllSeenSelector: null,
-            deleteAllSelector: null,
+            markAllReadSelector: null,
+            markAllUnreadSelector: null,
             viewAllSelector: null,
+            viewUnreadSelector: null,
             listSelector: null,
             listItemTemplate:
                 '<div class="notificationRow" id="notification_{id}" data-keepOpenOnClick>' +
@@ -169,6 +169,14 @@
         	}
         }
         
+        this.getNotificationIds = function(){
+	        	var ids = []; 
+	        	for(i in currentNotifications){
+	        		ids.push(currentNotifications[i].id);
+	        	}
+	        	return ids;
+        }
+        
         this.markAsRead = function(id){
 	    		console.log(id);
 	    		$.ajax({
@@ -212,11 +220,33 @@
         }
         
         this.markAllAsRead = function(){
-        	
+        		var ids = getNotificationIds();
+	    		$.ajax({
+	    			url: this.opts.readAllUrl,
+	    			method: "POST",
+	    			data: {ids:ids},
+	    			dataType: "json"
+	    		})
+	    		.done(function(data, textStatus, jqXHR){
+	    			var notifications = jqXHR.responseJSON;
+	    			currentNotifications = notifications;
+	    			processNotifications();
+	    		});
         }
         
         this.markAllAsUnread = function(){
-        	
+        		var ids = getNotificationIds();
+	        	$.ajax({
+	    			url: this.opts.unreadAllUrl,
+	    			method: "POST",
+	    			data: {ids:ids},
+	    			dataType: "json"
+	    		})
+	    		.done(function(data, textStatus, jqXHR){
+	    			var notifications = jqXHR.responseJSON;
+	    			currentNotifications = notifications;
+	    			processNotifications();
+	    		});
         }
         
         this.flash = function(notification){
@@ -273,14 +303,35 @@
     		if(self.opts.viewAllSelector != null && self.opts.viewAllSelector != ""){
     			$(self.opts.viewAllSelector).click(function(){
     				poll(1); //Poll for all notifications.
+//    				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
+//    					$(self.opts.markAllReadSelector).hide();
+//    					$(self.opts.markAllUnreadSelector).show();
+//    				}
     			});
     		}
     		
     		if(self.opts.viewUnreadSelector != null && self.opts.viewUnreadSelector != ""){
     			$(self.opts.viewUnreadSelector).click(function(){
     				poll(0); //Poll for unread notifications.
+//    				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
+//    					$(self.opts.markAllReadSelector).show();
+//    					$(self.opts.markAllUnreadSelector).hide();
+//    				}
     			});
     		}
+    		
+    		if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
+    			$(self.opts.markAllReadSelector).click(function(){
+    				markAllAsRead(); //Poll for unread notifications.
+    			});
+    		}
+    		
+    		if(self.opts.markAllUnreadSelector != null && self.opts.markAllUnreadSelector != ""){
+    			$(self.opts.markAllUnreadSelector).click(function(){
+    				markAllAsUnread(); //Poll for unread notifications.
+    			});
+    		}
+    		
         });
         
         return this;

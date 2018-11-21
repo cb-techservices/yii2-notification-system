@@ -54,26 +54,8 @@ class NotificationsController extends Controller
 		$models = $models->orderBy('read, created_at DESC')
 						 ->all();
 		
-        $results = [];
+        $results = $this->convertModelsToArray($models);
 //         \Yii::error(print_r($models,true));
-        foreach ($models as $model) {
-            // give user a chance to parse the date as needed
-//             $date = date('Y-m-d H:i:s');
-            /** @var Notification $model */
-            $results[] = [
-                'id' => $model->id,
-                'type' => $model->type,
-                'title' => $model->getTitle(),
-                'body' => $model->getBody(),
-            	'footer' => $model->getFooter(),
-                'url' => Url::to(['notifications/rnr', 'id' => $model->id]),
-                'key' => $model->key,
-           	 	'key_id' => $model->key_id,
-                'flashed' => $model->flashed,
-            		'read' => $model->read,
-                'date' => $model->created_at,
-            ];
-        }
         
 //         \Yii::error(print_r($results,true));
         return $results;
@@ -115,12 +97,14 @@ class NotificationsController extends Controller
     public function actionReadAll()
     {
         $notificationsIds = Yii::$app->request->post('ids', []);
+        $notifications = [];
         foreach ($notificationsIds as $id) {
             $notification = $this->getNotification($id);
             $notification->read = 1;
             $notification->save();
+            array_push($notifications, $notification);
         }
-        return true;
+        return $this->convertModelsToArray($notifications);
     }
     
 	public function actionUnread($id)
@@ -131,33 +115,24 @@ class NotificationsController extends Controller
         return $notification;
     }
     /**
-     * Delete all notifications
+     * Unread all notifications
      *
      * @throws HttpException Throws an exception if the notification is not
      *         found, or if it don't belongs to the logged in user
      */
-    public function actionDeleteAll()
+    public function actionUnreadAll()
     {
         $notificationsIds = Yii::$app->request->post('ids', []);
+        $notifications = [];
         foreach ($notificationsIds as $id) {
             $notification = $this->getNotification($id);
-            $notification->delete();
+            $notification->read = 0;
+            $notification->save();
+            array_push($notifications, $notification);
         }
-        return true;
+        return $this->convertModelsToArray($notifications);
     }
-    /**
-     * Deletes a notification
-     *
-     * @param int $id The notification id
-     * @return int|false Returns 1 if the notification was deleted, FALSE otherwise
-     * @throws HttpException Throws an exception if the notification is not
-     *         found, or if it don't belongs to the logged in user
-     */
-    public function actionDelete($id)
-    {
-        $notification = $this->getNotification($id);
-        return $notification->delete();
-    }
+    
     public function actionFlash($id)
     {
         $notification = $this->getNotification($id);
@@ -185,5 +160,29 @@ class NotificationsController extends Controller
             throw new HttpException(500, "Not your notification");
         }
         return $notification;
+    }
+    
+    private function convertModelsToArray($models){
+    		$results = [];
+    		foreach ($models as $model) {
+            // give user a chance to parse the date as needed
+//             $date = date('Y-m-d H:i:s');
+            /** @var Notification $model */
+            $results[] = [
+                'id' => $model->id,
+                'type' => $model->type,
+                'title' => $model->getTitle(),
+                'body' => $model->getBody(),
+            		'footer' => $model->getFooter(),
+                'url' => Url::to(['notifications/rnr', 'id' => $model->id]),
+                'key' => $model->key,
+           	 	'key_id' => $model->key_id,
+                'flashed' => $model->flashed,
+            		'read' => $model->read,
+                'date' => $model->created_at,
+            ];
+        }
+        
+        return $results;
     }
 }

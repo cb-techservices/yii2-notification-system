@@ -17,7 +17,6 @@ class NotificationsWidget extends Widget
 	public $pollUrl = '/notifications/notifications/poll';
 	public $markAsReadUrl = '/notifications/notifications/read';
 	public $markAsUnreadUrl = '/notifications/notifications/unread';
-	public $deleteUrl = '/notifications/notifications/delete';
 	public $flashUrl = '/notifications/notifications/flash';
 	
 	/**
@@ -51,14 +50,14 @@ class NotificationsWidget extends Widget
      * @var string A jQuery selector on which click mark all seen event
      *             will be fired
      */
-    public $markAllSeenSelector = null;
-    public $seenAllUrl = '/notifications/notifications/read-all';
+    public $markAllReadSelector = null;
+    public $readAllUrl = '/notifications/notifications/read-all';
     /**
      * @var string A jQuery selector on which click delete all event
      *             will be fired
      */
-    public $deleteAllSelector = null;
-    public $deleteAllUrl = '/notifications/notifications/delete-all';
+    public $markAllUnreadSelector = null;
+    public $unreadAllUrl = '/notifications/notifications/unread-all';
     /**
      * @var string The jQuery selector in which the notifications list should
      *             be rendered
@@ -134,18 +133,17 @@ class NotificationsWidget extends Widget
         
         $params['markAsReadUrl'] = $this->markAsReadUrl;
         $params['markAsUnreadUrl'] = $this->markAsUnreadUrl;
-	    $params['deleteUrl'] = $this->deleteUrl;
 		$params['flashUrl'] = $this->flashUrl;
 //         if ($this->theme) {
 //             $params['theme'] = Html::encode($this->theme);
 //         }
-        if ($this->markAllSeenSelector) {
-            $params['markAllSeenSelector'] = $this->markAllSeenSelector;
-            $params['seenAllUrl'] = $this->seenAllUrl;
+        if ($this->markAllReadSelector) {
+            $params['markAllReadSelector'] = $this->markAllReadSelector;
+            $params['readAllUrl'] = $this->readAllUrl;
         }
-        if ($this->deleteAllSelector) {
-            $params['deleteAllSelector'] = $this->deleteAllSelector;
-            $params['deleteAllUrl'] = $this->deleteAllUrl;
+        if ($this->markAllUnreadSelector) {
+            $params['markAllUnreadSelector'] = $this->markAllUnreadSelector;
+            $params['unreadAllUrl'] = $this->unreadAllUrl;
         }
         if ($this->listSelector) {
             $params['listSelector'] = $this->listSelector;
@@ -158,11 +156,11 @@ class NotificationsWidget extends Widget
         }
         
         if($this->viewAllSelector){
-        	$params["viewAllSelector"] = $this->viewAllSelector;
+        		$params["viewAllSelector"] = $this->viewAllSelector;
         }
         
-         if($this->viewUnreadSelector){
-        	$params["viewUnreadSelector"] = $this->viewUnreadSelector;
+        if($this->viewUnreadSelector){
+        		$params["viewUnreadSelector"] = $this->viewUnreadSelector;
         }
         
         $js = 'var notificationSystem = Notifications(' . Json::encode($params,JSON_PRETTY_PRINT) . ');
