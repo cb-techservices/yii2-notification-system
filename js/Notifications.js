@@ -14,7 +14,7 @@
     		var body = notification.body + notification.footer;
     		
     		//Mark as flashed since we're showing the notification with toastr.
-//    		flash(notification);
+    		flash(notification);
     		
     		// Define a callback for when the toast is shown/hidden/clicked
 //    		toastr.options.onShown = function() {
