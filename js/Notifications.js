@@ -62,6 +62,15 @@ var Notifications = (function(options) {
         markAllUnreadSelector: null,
         viewAllSelector: null,
         viewUnreadSelector: null,
+        headerSelector: null,
+        headerTitle: null,
+        headerTemplate: 
+        		'<div class="col-xs-12">' + 
+				'<div class="pull-left" style="font-size:14px;font-weight:bold;margin-left:10px;">{title}</div>' + 
+				'<button id="{readAllId}" class="btn btn-xs btn-link pull-right" style="color:#3399ff;" data-keepOpenOnClick>Read</button>' + 
+				'<button id="{unreadAllId}" class="btn btn-xs btn-link pull-right" style="color:#3399ff;" data-keepOpenOnClick>Unread</button>' + 
+				'<label style="font-size:12px;padding-top:1px;" class="pull-right">Mark All as </label>' +
+			'</div>',
         listSelector: null,
         listItemTemplate:
             '<div class="notificationRow" id="notification_{id}" data-keepOpenOnClick>' +
@@ -126,6 +135,13 @@ var Notifications = (function(options) {
 				$('#notification_unread_'+ notification.id).tooltip();
 			}
 		}
+		
+		if(opts.headerSelector != null && opts.headerSelector != ""){
+			var header = renderHeader(opts.headerSelector);
+			$(opts.headerSelector).empty().append(header);
+		}
+		
+//		initializeSelectors();
     }
     
     this.updateCounters = function(){
@@ -259,6 +275,17 @@ var Notifications = (function(options) {
         	}
     }
     
+    this.renderHeader = function(headerSelector){
+    		var html = "";
+    		
+    		html += self.opts.headerTemplate;
+    		html = html.replace(/\{title}/g, self.opts.headerTitle);
+    		html = html.replace(/\{readAllId}/g, self.opts.markAllReadSelector.substr(1));
+    		html = html.replace(/\{unreadAllId}/g, self.opts.markAllUnreadSelector.substr(1));
+    		
+    		return html;
+    }
+    
     this.renderRow = function(notification){
     		var html = "";
     		
@@ -281,6 +308,40 @@ var Notifications = (function(options) {
         return html;
     }
     
+    this.initializeSelectors = function(){
+    		if(self.opts.viewAllSelector != null && self.opts.viewAllSelector != ""){
+			$('body').on('click', self.opts.viewAllSelector, function(){
+				poll(1); //Poll for all notifications.
+//				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
+//					$(self.opts.markAllReadSelector).hide();
+//					$(self.opts.markAllUnreadSelector).show();
+//				}
+			});
+		}
+		
+		if(self.opts.viewUnreadSelector != null && self.opts.viewUnreadSelector != ""){
+			$('body').on('click', self.opts.viewUnreadSelector, function(){
+				poll(0); //Poll for unread notifications.
+//				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
+//					$(self.opts.markAllReadSelector).show();
+//					$(self.opts.markAllUnreadSelector).hide();
+//				}
+			});
+		}
+		
+		if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
+			$('body').on('click', self.opts.markAllReadSelector, function(){
+				markAllAsRead(); //Poll for unread notifications.
+			});
+		}
+		
+		if(self.opts.markAllUnreadSelector != null && self.opts.markAllUnreadSelector != ""){
+			$('body').on('click', self.opts.markAllUnreadSelector, function(){
+				markAllAsUnread(); //Poll for unread notifications.
+			});
+		}
+    }
+    
 //        notify();
     
     $(document).ready(function(){
@@ -288,38 +349,7 @@ var Notifications = (function(options) {
     			e.stopPropagation();
     		});
 		
-    		if(self.opts.viewAllSelector != null && self.opts.viewAllSelector != ""){
-    			$(self.opts.viewAllSelector).click(function(){
-    				poll(1); //Poll for all notifications.
-//    				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
-//    					$(self.opts.markAllReadSelector).hide();
-//    					$(self.opts.markAllUnreadSelector).show();
-//    				}
-    			});
-    		}
-    		
-    		if(self.opts.viewUnreadSelector != null && self.opts.viewUnreadSelector != ""){
-    			$(self.opts.viewUnreadSelector).click(function(){
-    				poll(0); //Poll for unread notifications.
-//    				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
-//    					$(self.opts.markAllReadSelector).show();
-//    					$(self.opts.markAllUnreadSelector).hide();
-//    				}
-    			});
-    		}
-    		
-    		if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
-    			$(self.opts.markAllReadSelector).click(function(){
-    				markAllAsRead(); //Poll for unread notifications.
-    			});
-    		}
-    		
-    		if(self.opts.markAllUnreadSelector != null && self.opts.markAllUnreadSelector != ""){
-    			$(self.opts.markAllUnreadSelector).click(function(){
-    				markAllAsUnread(); //Poll for unread notifications.
-    			});
-    		}
-		
+    		initializeSelectors();
     });
     
     return this;

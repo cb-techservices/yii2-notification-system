@@ -104,9 +104,24 @@ class NotificationsWidget extends Widget
     public $viewUnreadSelector = null;
     
     /**
+     * @var string The jQuery selector for the Notifications header view
+     */
+    public $headerSelector = null;
+    
+    /**
      * @var string The list item HTML template
      */
     public $listItemTemplate = null;
+    
+    /**
+     * @var string The header HTML template
+     */
+    public $headerTemplate = null;
+    
+    /**
+     * @var string The header title
+     */
+    public $headerTitle = "Notifications";
 	
 
     public function init()
@@ -198,6 +213,17 @@ class NotificationsWidget extends Widget
         
         if($this->viewUnreadSelector){
         		$params["viewUnreadSelector"] = $this->viewUnreadSelector;
+        }
+        
+        if($this->headerSelector){
+        		$params["headerSelector"] = $this->headerSelector;
+        		if($this->headerTemplate){
+        			$params["headerTemplate"] = $this->headerTemplate;
+        		}
+        }
+        
+        if($this->headerTitle){
+        		$params["headerTitle"] = $this->headerTitle;
         }
         
         $js = 'var notificationSystem = Notifications(' . Json::encode($params,JSON_PRETTY_PRINT) . ');
