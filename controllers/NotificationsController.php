@@ -1,6 +1,5 @@
 <?php
 
-// namespace frontend\modules\unsplash\controllers;
 namespace cbtech\notification_system\controllers;
 
 use Yii;

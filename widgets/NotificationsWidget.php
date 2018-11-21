@@ -14,71 +14,104 @@ use yii\helpers\Json;
 
 class NotificationsWidget extends Widget
 {
+	 /**
+     * @var string The URL for the poll() for new notifications controller action
+     */
 	public $pollUrl = '/notifications/notifications/poll';
+	
+	/**
+     * @var string The URL for the controller action that marks an individual notification as read
+     */
 	public $markAsReadUrl = '/notifications/notifications/read';
+	
+	/**
+     * @var string The URL for the controller action that marks an individual notification as unread
+     */
 	public $markAsUnreadUrl = '/notifications/notifications/unread';
+	
+	/**
+     * @var string The URL for the controller action that marks an individual notification as having been flashed
+     */
 	public $flashUrl = '/notifications/notifications/flash';
+	
+	/**
+     * @var string The URL for the controller action that marks all notifications as read
+     */
+	public $readAllUrl = '/notifications/notifications/read-all';
+	
+	/**
+     * @var string The URL for the controller action that marks all notifications as unread
+     */
+	public $unreadAllUrl = '/notifications/notifications/unread-all';
 	
 	/**
      * @var array additional options to be passed to the notification library.
      * Please refer to the plugin project page for available options.
      */
     public $clientOptions = [];
+    
 //     /**
 //      * @var string the library name to be used for notifications
 //      * One of the THEME_XXX constants
 //      */
 //     public $theme = null;
+
     /**
      * @var integer The time to leave the notification shown on screen
      */
     public $delay = 5000;
+    
     /**
      * @var integer the XHR timeout in milliseconds
      */
     public $xhrTimeout = 2000;
+    
     /**
      * @var integer The delay between pulls
      */
     public $pollInterval = 5000;
+    
      /**
      * @var array An array of jQuery selector to be updated with the current
      *            notifications count
      */
     public $counters = [];
+     
      /**
-     * @var string A jQuery selector on which click mark all seen event
-     *             will be fired
+     * @var string The jQuery selector for the Mark All as Read button
      */
     public $markAllReadSelector = null;
-    public $readAllUrl = '/notifications/notifications/read-all';
+    
     /**
-     * @var string A jQuery selector on which click delete all event
-     *             will be fired
+     * @var string The jQuery selector for the Mark All as Unread button
      */
     public $markAllUnreadSelector = null;
-    public $unreadAllUrl = '/notifications/notifications/unread-all';
+
     /**
      * @var string The jQuery selector in which the notifications list should
      *             be rendered
      */
     public $listSelector = null;
+    
+    /**
+     * @var string The jQuery selector for the View All button
+     */
+    public $viewAllSelector = null;
+    
+    /**
+     * @var string The jQuery selector for the View Unread button
+     */
+    public $viewUnreadSelector = null;
+    
     /**
      * @var string The list item HTML template
      */
     public $listItemTemplate = null;
-    
-    public $viewAllSelector = null;
-    
-    public $viewUnreadSelector = null;
 	
 
     public function init()
     {
         parent::init();
-        
-        //Load AppAssets
-//         AppAsset::register($this->view);
     }
 
 	/**
@@ -121,29 +154,33 @@ class NotificationsWidget extends Widget
 //             ]);
 //         }
 			
+        //Set basic params
         $params = [
-            'pollUrl' => $this->pollUrl,
             'xhrTimeout' => Html::encode($this->xhrTimeout),
             'delay' => Html::encode($this->delay),
             'options' => $this->clientOptions,
-//             'pollSeen' => $this->pollSeen,
             'pollInterval' => Html::encode($this->pollInterval),
             'counters' => $this->counters,
         ];
-        
+
+        //Set the URLs
+		$params['pollUrl'] = $this->pollUrl;
         $params['markAsReadUrl'] = $this->markAsReadUrl;
         $params['markAsUnreadUrl'] = $this->markAsUnreadUrl;
 		$params['flashUrl'] = $this->flashUrl;
+		$params['readAllUrl'] = $this->readAllUrl;
+		$params['unreadAllUrl'] = $this->unreadAllUrl;
+		
 //         if ($this->theme) {
 //             $params['theme'] = Html::encode($this->theme);
 //         }
+
+		//Set the jQuery Selectors
         if ($this->markAllReadSelector) {
             $params['markAllReadSelector'] = $this->markAllReadSelector;
-            $params['readAllUrl'] = $this->readAllUrl;
         }
         if ($this->markAllUnreadSelector) {
             $params['markAllUnreadSelector'] = $this->markAllUnreadSelector;
-            $params['unreadAllUrl'] = $this->unreadAllUrl;
         }
         if ($this->listSelector) {
             $params['listSelector'] = $this->listSelector;

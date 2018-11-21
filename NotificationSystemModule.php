@@ -9,7 +9,7 @@ use yii\db\Expression;
 use cbtech\notification_system\models\NotificationBase;
 
 /**
- * unsplash module definition class
+ * Notification System module definition class
  */
 class NotificationSystemModule extends \yii\base\Module
 {
@@ -18,7 +18,7 @@ class NotificationSystemModule extends \yii\base\Module
      */
     public $controllerNamespace = 'cbtech\notification_system\controllers';
     /**
-     * @var Notification The notification class defined by the application
+     * @var Notification The notification class defined by the application. This class MUST extend the NotificationBase class provided.
      */
     public $notificationClass;
     /**
@@ -34,7 +34,7 @@ class NotificationSystemModule extends \yii\base\Module
      */
     public $userId;
 	/**
-	 * @var callable|integer The current user id
+	 * @var callable|integer The expiration time of the notification.
 	 */
 	public $expirationTime = 0;
 	/**
