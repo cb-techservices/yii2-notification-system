@@ -51,7 +51,7 @@ Add the following to the `modules` section of your Yii project config.
 ### Declaring your notifications
 Your custom Notification class must **extend** `cbtech\notification_system\models\NotificationBase`
 
-An example is provided in [/examples/Notification.php](/examples/Notification.php)
+An example is provided in [examples/Notification.php](examples/Notification.php)
 
 
 Usage
@@ -77,24 +77,24 @@ This extension comes with a `NotificationsWidget` that is used to regularly poll
 
 ### Widget Parameters
 
-| Parameter             | Description                                                                                     | Default     |
-| --------------------  | ----------------------------------------------------------------------------------------------- | -----------:|
-| pollUrl               | The URL for the poll() for new notifications controller action                                  | false       |
-| markAsReadUrl         | The URL for the controller action that marks an individual notification as read                 | false       |
-| markAsUnreadUrl       | The URL for the controller action that marks an individual notification as unread               | false       |
-| flashUrl              | The URL for the controller action that marks an individual notification as having been flashed  | false       |
-| readAllUrl            | The URL for the controller action that marks all notifications as read                          | false       |
-| unreadAllUrl          | The URL for the controller action that marks all notifications as unread                        | false       |
-| delay                 | The time to leave the notification shown on screen                                              | 5000        |
-| pollInterval          | The delay in milliseconds between polls                                                         | 5000        |
-| xhrTimeout            | The XHR request timeout in milliseconds                                                         | 2000        |
-| counters              | An array of jQuery selectors to update with the current notifications count                     | []          |
-| markAllReadSelector   | The jQuery selector for the Mark All as Read button                                             | null        |
-| markAllUnreadSelector | The jQuery selector for the Mark All as Unread button                                           | null        |
-| viewAllSelector       | The jQuery selector for your UI element that will holds the notification list                   | null        |
-| viewUnreadSelector    | The jQuery selector for the View Unread button                                                  | null        |
-| headerSelector        | The jQuery selector for the Notifications header view                                           | null        |
-| headerTemplate        | The header HTML template                                                                        | null        |
-| headerTitle           | The header title string                                                                         | "Notifications" |
-| listSelector          | The jQuery selector for the View All button                                                     | null        |
-| listItemTemplate      | An optional template for the list item.                                                         | built-in    |
+| Parameter             |  Type   | Description                                                                                     | Default     |
+| :-------------------- | ------- | :---------------------------------------------------------------------------------------------- |:-----------:|
+| pollUrl               | String  | The URL for the poll() for new notifications controller action                                  | '/notifications/notifications/poll'       |
+| markAsReadUrl         | String  | The URL for the controller action that marks an individual notification as read                 | '/notifications/notifications/read'       |
+| markAsUnreadUrl       | String  | The URL for the controller action that marks an individual notification as unread               | '/notifications/notifications/unread'     |
+| flashUrl              | String  | The URL for the controller action that marks an individual notification as having been flashed  | '/notifications/notifications/flash'      |
+| readAllUrl            | String  | The URL for the controller action that marks all notifications as read                          | '/notifications/notifications/read-all'   |
+| unreadAllUrl          | String  | The URL for the controller action that marks all notifications as unread                        | '/notifications/notifications/unread-all' |
+| delay                 | Integer | The time to leave the notification shown on screen                                              | 5000        |
+| pollInterval          | Integer | The delay in milliseconds between polls                                                         | 5000        |
+| xhrTimeout            | Integer | The XHR request timeout in milliseconds                                                         | 2000        |
+| counters              | Array   | An array of jQuery selectors to update with the current notifications count                     | []          |
+| markAllReadSelector   | String  | The jQuery selector for the Mark All as Read button                                             | null        |
+| markAllUnreadSelector | String  | The jQuery selector for the Mark All as Unread button                                           | null        |
+| viewAllSelector       | String  | The jQuery selector for your UI element that will holds the notification list                   | null        |
+| viewUnreadSelector    | String  | The jQuery selector for the View Unread button                                                  | null        |
+| headerSelector        | String  | The jQuery selector for the Notifications header view                                           | null        |
+| headerTemplate        | String  | The header HTML template                                                                        | null        |
+| headerTitle           | String  | The header title string                                                                         | "Notifications" |
+| listSelector          | String  | The jQuery selector for the View All button                                                     | null        |
+| listItemTemplate      | String  | An optional template for the list item.                                                         | built-in    |
