@@ -126,6 +126,7 @@ var Notifications = (function(options) {
 			}
 			rows += renderRow(notification);
 		}
+		
 		if(opts.listSelector != null && opts.listSelector != ""){
 			$(opts.listSelector).empty().append(rows);
 			//Initialize bootstrap tooltips
@@ -135,13 +136,6 @@ var Notifications = (function(options) {
 				$('#notification_unread_'+ notification.id).tooltip();
 			}
 		}
-		
-		if(opts.headerSelector != null && opts.headerSelector != ""){
-			var header = renderHeader(opts.headerSelector);
-			$(opts.headerSelector).empty().append(header);
-		}
-		
-//		initializeSelectors();
     }
     
     this.updateCounters = function(){
@@ -330,7 +324,7 @@ var Notifications = (function(options) {
 		}
 		
 		if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
-			$('body').on('click', self.opts.markAllReadSelector, function(){
+			$('body').on('click', self.opts.markAllReadSelector, function(e){
 				markAllAsRead(); //Poll for unread notifications.
 			});
 		}
@@ -349,6 +343,11 @@ var Notifications = (function(options) {
     			e.stopPropagation();
     		});
 		
+    		if(opts.headerSelector != null && opts.headerSelector != ""){
+    			var header = renderHeader(opts.headerSelector);
+    			$(opts.headerSelector).empty().append(header);
+    		}
+    		
     		initializeSelectors();
     });
     

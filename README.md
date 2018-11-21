@@ -98,3 +98,73 @@ This extension comes with a `NotificationsWidget` that is used to regularly poll
 | headerTitle           | String  | The header title string                                                                         | "Notifications" |
 | listSelector          | String  | The jQuery selector for the View All button                                                     | null        |
 | listItemTemplate      | String  | An optional template for the list item.                                                         | built-in    |
+
+### Widget Usage
+Below is an example of the widget with all possible parameters.  Optional values are indicated. This should be added at the top of your main layout template.
+```php
+NotificationsWidget::widget([
+    'pollUrl' => '/notifications/notifications/poll', //Optional, default value
+    'markAsReadUrl' => '/notifications/notifications/read', //Optional, default value
+    'markAsUnreadUrl' => '/notifications/notifications/unread', //Optional, default value
+    'flashUrl' => '/notifications/notifications/flash', //Optional, default value
+    'readAllUrl' => '/notifications/notifications/read-all', //Optional, default value
+    'unreadAllUrl' => '/notifications/notifications/unread-all', //Optional, default value
+    'clientOptions' => [
+        'location' => 'tr',
+    ],
+    'delay' => 5000,
+	'xhrTimeout' => 2000,
+    'pollInterval' => 5000,
+    'counters' => [
+        '.notifications-header-count',
+        '.notifications-icon-count'
+    ],
+    'markAllReadSelector' => '#notification-read-all',
+    'markAllUnreadSelector' => '#notification-unread-all',
+    'listSelector' => '#notifications',
+    'viewAllSelector' => '#viewAll',
+    'viewUnreadSelector' => '#viewUnread',
+    'headerSelector' => '#notifications-header',
+    'headerTitle' => 'Notifications',
+    'headerTemplate' => 
+        '<div class="col-xs-12">' . 
+            '<div class="pull-left" style="font-size:14px;font-weight:bold;margin-left:10px;">{title}</div>' . 
+            '<button id="{readAllId}" class="btn btn-xs btn-link pull-right" style="color:#3399ff;" data-keepOpenOnClick>Read</button>' . 
+            '<button id="{unreadAllId}" class="btn btn-xs btn-link pull-right" style="color:#3399ff;" data-keepOpenOnClick>Unread</button>' . 
+            '<label style="font-size:12px;padding-top:1px;" class="pull-right">Mark All as </label>' .
+        '</div>', //Optional, default value
+    'listItemTemplate' => 
+        '<div class="notificationRow" id="notification_{id}" data-keepOpenOnClick>' .
+            '<div class="col-xs-11" onclick="goToRoute(\'{id}\');">' .
+                '<div class="notification-title">{title}</div>' .
+                '<div class="notification-body">{body}</div>' .
+            '</div>' .
+            '<div class="col-xs-1">' .
+                '<div class="notification-actions pull-right">{read}{unread}</div>' .
+            '</div>' .
+            '<div class="clearfix"></div>' . 
+            '<div class="col-xs-1">' .
+                '<div class="notification-timeago">{timeago}</div>' .
+            '</div>' .
+            '<div class="col-xs-10">' .
+                '<div class="notification-footer">{footer}</div>' .
+            '</div>' .
+            '<div class="clearfix"></div>' . 
+        '</div>', //Optional, default value
+]);
+```
+
+If you have provided a value for the `headerSelector` and/or the `listItemTemplate` you can include the notifications list view by adding the following to your navbar:
+```php
+$menuItems[] = '<li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span style="font-size:18px;top: 5px;margin-right:3px;" class="glyphicon glyphicon-bell"></span><span class="badge notifications-icon-count">0</span></a>
+                    <ul class="dropdown-menu">
+                        <li id="notifications-header" style="text-align:center;"></li>
+                        <li id="notifications"></li>
+                        <li style="text-align:center;border-bottom:1px #cccccc solid;padding:10px;">
+                            <button class="btn btn-xs btn-primary" id="viewAll" data-keepOpenOnClick>View All</button> /
+                            <button class="btn btn-xs btn-primary" id="viewUnread" data-keepOpenOnClick>View Unread</button>
+                        </li>
+                    </ul>
+                </li>';
+```
