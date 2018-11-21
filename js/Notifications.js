@@ -76,21 +76,23 @@
             viewAllSelector: null,
             listSelector: null,
             listItemTemplate:
-                '<div class="notificationRow row" id="notification_{id}" data-keepOpenOnClick>' +
-                    '<div class="col-xs-10" onclick="goToRoute(\'{id}\');">' +
+                '<div class="notificationRow" id="notification_{id}" data-keepOpenOnClick>' +
+                    '<div class="col-xs-11" onclick="goToRoute(\'{id}\');">' +
                         '<div class="notification-title">{title}</div>' +
                         '<div class="notification-body">{body}</div>' +
                     '</div>' +
-                    '<div class="col-xs-2">' +
-                    	'<div class="notification-timeago pull-right">{timeago}</div>' +
+                    '<div class="col-xs-1">' +
                         '<div class="notification-actions pull-right">{read}{unread}</div>' +
                     '</div>' +
                     '<div class="clearfix"></div>' + 
-                    '<div class="col-xs-12">' +
+                    '<div class="col-xs-1">' +
+            				'<div class="notification-timeago">{timeago}</div>' +
+            			'</div>' +
+                    '<div class="col-xs-10">' +
 	                    '<div class="notification-footer">{footer}</div>' +
 	                '</div>' +
 	                '<div class="clearfix"></div>' + 
-                    '<hr/>' +
+//                    '<hr/>' +
                 '</div>',
             listItemBeforeRender: function (elem) {
                 return elem;
@@ -116,7 +118,7 @@
         }
         
         this.processNotifications = function(){
-        	var rows = "";
+        		var rows = "";
 			
 			updateCounters();
 			
@@ -129,6 +131,12 @@
 			}
 			if(opts.listSelector != null && opts.listSelector != ""){
 				$(opts.listSelector).empty().append(rows);
+				//Initialize bootstrap tooltips
+				for(i in currentNotifications){
+					var notification = currentNotifications[i];
+					$('#notification_read_'+ notification.id).tooltip();
+					$('#notification_unread_'+ notification.id).tooltip();
+				}
 			}
         }
         
@@ -174,9 +182,10 @@
 	    				$("#notification_read_"+id).hide();
 	    				$("#notification_unread_"+id).show();
 	    			}
-	    			//Remove the notification from the currentNotifications array.
+//	    			//Remove the notification from the currentNotifications array.
 	    			var index = getNotificationIndex(id);
-	    			currentNotifications.splice(index,1);
+	    			currentNotifications[index].read = 1;
+//	    			currentNotifications.splice(index,1);
 	    			updateCounters();
 	    		});
         }
@@ -194,9 +203,10 @@
 	    				$("#notification_read_"+id).show();
 	    				$("#notification_unread_"+id).hide();
 	    			}
-	    			//Remove the notification from the currentNotifications array.
+//	    			//Remove the notification from the currentNotifications array.
 	    			var index = getNotificationIndex(id);
-	    			currentNotifications.splice(index,1);
+	    			currentNotifications[index].read = 0;
+//	    			currentNotifications.splice(index,1);
 	    			updateCounters();
 	    		});
         }
@@ -241,11 +251,11 @@
     		html = html.replace(/\{url}/g, notification.url);
     		html = html.replace(/\{footer}/g, notification.footer);
     		if(notification.read == 1){
-    			html = html.replace(/\{read}/g, '<button id="notification_read_'+ notification.id + '" style="display:none;" onclick="markAsRead(' + notification.id + ');" class="notification-read" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as read" data-keepOpenOnClick></button>');
-        		html = html.replace(/\{unread}/g, '<button id="notification_unread_'+ notification.id + '" onclick="markAsUnread(' + notification.id + ');" class="notification-unread" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as unread" data-keepOpenOnClick></button>');
+    			html = html.replace(/\{read}/g, '<button id="notification_read_'+ notification.id + '" style="display:none;" onclick="markAsRead(' + notification.id + ');" class="notification-read" data-toggle="tooltip" data-placement="bottom" data-container="body" title="Mark as read" data-keepOpenOnClick></button>');
+        		html = html.replace(/\{unread}/g, '<button id="notification_unread_'+ notification.id + '" onclick="markAsUnread(' + notification.id + ');" class="notification-unread" data-toggle="tooltip" data-placement="bottom" data-container="body" title="Mark as unread" data-keepOpenOnClick></button>');
     		}else{
-    			html = html.replace(/\{read}/g, '<button id="notification_read_'+ notification.id + '" onclick="markAsRead(' + notification.id + ');" class="notification-read" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as read" data-keepOpenOnClick></button>');
-        		html = html.replace(/\{unread}/g, '<button id="notification_unread_'+ notification.id + '" style="display:none;" onclick="markAsUnread(' + notification.id + ');" class="notification-unread" data-toggle="tooltip" data-placement="right" data-container="body" title="Mark as unread" data-keepOpenOnClick></button>');
+    			html = html.replace(/\{read}/g, '<button id="notification_read_'+ notification.id + '" onclick="markAsRead(' + notification.id + ');" class="notification-read" data-toggle="tooltip" data-placement="bottom" data-container="body" title="Mark as read" data-keepOpenOnClick></button>');
+        		html = html.replace(/\{unread}/g, '<button id="notification_unread_'+ notification.id + '" style="display:none;" onclick="markAsUnread(' + notification.id + ');" class="notification-unread" data-toggle="tooltip" data-placement="bottom" data-container="body" title="Mark as unread" data-keepOpenOnClick></button>');
     		}
     		
     		html = html.replace(/\{timeago}/g, '<span class="notification-timeago">' + $.timeago(notification.date) +'</span>');
