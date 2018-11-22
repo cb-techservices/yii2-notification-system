@@ -178,4 +178,5 @@ $menuItems[] = '<li class="dropdown">
 Contributors
 ------------
 @carlb0329 Carl Burnstein
-@casls Center for Applied Second Language Studies
+
+Inspired by https://github.com/machour/yii2-notifications
