@@ -94,10 +94,10 @@ This extension comes with a `NotificationsWidget` that is used to regularly poll
 | viewAllSelector       | String  | The jQuery selector for your UI element that will holds the notification list                   | null        |
 | viewUnreadSelector    | String  | The jQuery selector for the View Unread button                                                  | null        |
 | headerSelector        | String  | The jQuery selector for the Notifications header view                                           | null        |
-| headerTemplate        | String  | The header HTML template                                                                        | null        |
+| headerTemplate        | String  | The header HTML template. You can provide your own HTML structure and use the following variables: `{title}`,`{readAllId}`,`{unreadAllId}` | See default example below. |
 | headerTitle           | String  | The header title string                                                                         | "Notifications" |
 | listSelector          | String  | The jQuery selector for the View All button                                                     | null        |
-| listItemTemplate      | String  | An optional template for the list item.                                                         | built-in    |
+| listItemTemplate      | String  | The list item HTML template. You can provide your own HTML structure and use the following variables: `{id}`,`{title}`,`{body}`,`{read}`,`{unread}`,`{timeago}`,`{footer}` | See default example below. |
 
 ### Widget Usage
 Below is an example of the widget with all possible parameters.  Optional values are indicated. This should be added at the top of your main layout template.
@@ -168,3 +168,9 @@ $menuItems[] = '<li class="dropdown">
                     </ul>
                 </li>';
 ```
+
+#### Notifications List View
+![Notifications list view](https://raw.githubusercontent.com/cb-techservices/yii2-notification-system/master/images/NotificationsListView.png)
+
+#### Tostr Notification
+![Toastr notification](https://raw.githubusercontent.com/cb-techservices/yii2-notification-system/master/images/ToastrNotification.png)
