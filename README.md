@@ -47,6 +47,14 @@ Add the following to the `modules` section of your Yii project config.
 ],
 ```
 ### Module Parameters
+| Parameter             |  Type   | Description                                                                                     | Default     |
+| :-------------------- | ------- | :---------------------------------------------------------------------------------------------- |:----------- |
+| class | String | The required class path to the NotificationSystemModule | 'cbtech\notification_system\NotificationSystemModule' | 
+| controllerNamespace | String | The controller's namespace for where to find the Controller actions.  You may use the default NotificationsController provided or create your own custom controller. | 'cbtech\notification_system\controllers' |
+| notificationClass | String | Point this to your own Notification class. See the "Declaring your notifications" section below. | 'common\models\Notification' |
+| allowDuplicate | Boolean | Allow to have notifications with the same user_id, key, key_id | false |
+| dbDateFormat | String | Allows custom date formatting in databse | 'Y-m-d H:i:s' |
+| userId | callable/integer | This callable should return your logged in user Id | ``` function() { return \Yii::$app->user->id; } ``` |
 
 ### Declaring your notifications
 Your custom Notification class must **extend** `cbtech\notification_system\models\NotificationBase`
@@ -78,7 +86,7 @@ This extension comes with a `NotificationsWidget` that is used to regularly poll
 ### Widget Parameters
 
 | Parameter             |  Type   | Description                                                                                     | Default     |
-| :-------------------- | ------- | :---------------------------------------------------------------------------------------------- |:-----------:|
+| :-------------------- | ------- | :---------------------------------------------------------------------------------------------- |:----------- |
 | pollUrl               | String  | The URL for the poll() for new notifications controller action                                  | '/notifications/notifications/poll'       |
 | markAsReadUrl         | String  | The URL for the controller action that marks an individual notification as read                 | '/notifications/notifications/read'       |
 | markAsUnreadUrl       | String  | The URL for the controller action that marks an individual notification as unread               | '/notifications/notifications/unread'     |
