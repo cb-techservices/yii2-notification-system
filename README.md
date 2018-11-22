@@ -177,6 +177,14 @@ $menuItems[] = '<li class="dropdown">
 
 Contributors
 ------------
-@carlb0329 Carl Burnstein
+Carl Burnstein https://github.com/carlb0329
 
-Inspired by https://github.com/machour/yii2-notifications
+Credits
+------------
+Inspired by ![machour/yii2-notifications](https://github.com/machour/yii2-notifications)
+Uses ![CodeSeven/toastr](https://github.com/CodeSeven/toastr)
+
+License
+------------
+Yii2 Notification System is licensed under MIT license - https://github.com/cb-techservices/yii2-notification-system/blob/master/LICENSE <br/>
+Copyright (c) 2018 CB Tech Services
