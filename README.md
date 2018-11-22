@@ -192,7 +192,7 @@ Carl Burnstein https://github.com/carlb0329
 
 Credits
 ------------
-Inspired by [machour/yii2-notifications](https://github.com/machour/yii2-notifications)
+Inspired by [machour/yii2-notifications](https://github.com/machour/yii2-notifications) <br/>
 Uses [CodeSeven/toastr](https://github.com/CodeSeven/toastr)
 
 License
