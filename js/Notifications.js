@@ -102,10 +102,10 @@ var Notifications = (function(options) {
 			method: "GET",
 			data: {all:all},
 			dataType: "json",
-//        		complete: setTimeout(function() {
-//        			self.poll(all)
-//                }, this.opts.pollInterval),
-//                timeout: opts.xhrTimeout
+        		complete: setTimeout(function() {
+        			self.poll(all)
+                }, this.opts.pollInterval),
+                timeout: opts.xhrTimeout
 		})
 		.done(function(data, textStatus, jqXHR){
 			var notifications = jqXHR.responseJSON;
