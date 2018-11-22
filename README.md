@@ -174,3 +174,8 @@ $menuItems[] = '<li class="dropdown">
 
 #### Tostr Notification
 ![Toastr notification](https://raw.githubusercontent.com/cb-techservices/yii2-notification-system/master/images/ToastrNotification.png)
+
+Contributors
+------------
+@carlb0329 Carl Burnstein
+@casls Center for Applied Second Language Studies
