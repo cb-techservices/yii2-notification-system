@@ -1,6 +1,7 @@
 var Notifications = (function(options) {
 	
 	this.currentNotifications = [];
+	this.currentTimer = null;
 	
 //		function notify(){ //This syntax makes the function callable only from within the class.
 	this.notify = function(notification){ //This syntax makes the function callable by the object (this)
@@ -102,11 +103,13 @@ var Notifications = (function(options) {
 			method: "GET",
 			data: {all:all},
 			dataType: "json",
-        		complete: setTimeout(function() {
-        			self.poll(all)
-                }, this.opts.pollInterval),
-                timeout: opts.xhrTimeout
-		})
+        		complete: function(){
+    				self.currentTimer = setTimeout(function() {
+            			self.poll(all,1)
+        			}, self.opts.pollInterval);
+        		},
+        		timeout: self.opts.xhrTimeout
+        	})
 		.done(function(data, textStatus, jqXHR){
 			var notifications = jqXHR.responseJSON;
 			currentNotifications = notifications;
@@ -305,6 +308,7 @@ var Notifications = (function(options) {
     this.initializeSelectors = function(){
     		if(self.opts.viewAllSelector != null && self.opts.viewAllSelector != ""){
 			$('body').on('click', self.opts.viewAllSelector, function(){
+				clearTimeout(self.currentTimer);
 				poll(1); //Poll for all notifications.
 //				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
 //					$(self.opts.markAllReadSelector).hide();
@@ -315,6 +319,7 @@ var Notifications = (function(options) {
 		
 		if(self.opts.viewUnreadSelector != null && self.opts.viewUnreadSelector != ""){
 			$('body').on('click', self.opts.viewUnreadSelector, function(){
+				clearTimeout(self.currentTimer);
 				poll(0); //Poll for unread notifications.
 //				if(self.opts.markAllReadSelector != null && self.opts.markAllReadSelector != ""){
 //					$(self.opts.markAllReadSelector).show();
