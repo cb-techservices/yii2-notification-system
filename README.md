@@ -157,7 +157,10 @@ NotificationsWidget::widget([
 If you have provided a value for the `headerSelector` and/or the `listItemTemplate` you can include the notifications list view by adding the following to your navbar:
 ```php
 $menuItems[] = '<li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span style="font-size:18px;top: 5px;margin-right:3px;" class="glyphicon glyphicon-bell"></span><span class="badge notifications-icon-count">0</span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span style="font-size:18px;top: 5px;margin-right:3px;" class="glyphicon glyphicon-bell"></span>
+                        <span class="badge notifications-icon-count">0</span>
+                    </a>
                     <ul class="dropdown-menu">
                         <li id="notifications-header" style="text-align:center;"></li>
                         <li id="notifications"></li>
