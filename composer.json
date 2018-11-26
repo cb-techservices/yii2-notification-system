@@ -1,5 +1,5 @@
 {
-	"name" : "cbtech/yii2-notification-system",
+	"name" : "cb-techservices/yii2-notification-system",
 	"description" : "Yii2 extension which provides a fully functional notification system with customizable UI.",
 	"type" : "yii2-extension",
 	"keywords" : [
