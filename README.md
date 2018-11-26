@@ -5,11 +5,11 @@ Installation
 ------------
 ##### Composer
 ```shell
-php composer.phar require cbtech/yii2-notification-system "*"
+php composer.phar require cb-techservices/yii2-notification-system "*"
 ```
 or add
 ```json
-"cbtech/yii2-notification-system": "*"
+"cb-techservices/yii2-notification-system": "*"
 ```
 to the require section of your `composer.json` file.
 
@@ -19,7 +19,7 @@ Before using this module, you have to run its migrations scripts. This will add 
 
 Run this command from the root of your Yii project:
 ```bash
-./yii migrate/up --migrationPath=vendor/cbtech/yii2-notification-system/migrations/
+./yii migrate/up --migrationPath=vendor/cb-techservices/yii2-notification-system/migrations/
 ```
 
 Add the following to the `modules` section of your Yii project config.
