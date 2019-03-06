@@ -173,7 +173,7 @@ class NotificationsController extends Controller
                 'title' => $model->getTitle(),
                 'body' => $model->getBody(),
             		'footer' => $model->getFooter(),
-                'url' => Url::to(['notifications/rnr', 'id' => $model->id]),
+                'url' => $model->getRoute(),
                 'key' => $model->key,
            	 	'key_id' => $model->key_id,
                 'flashed' => $model->flashed,
