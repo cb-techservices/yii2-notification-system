@@ -75,7 +75,7 @@ var Notifications = (function(options) {
         listSelector: null,
         listItemTemplate:
             '<div class="notificationRow" id="notification_{id}" data-keepOpenOnClick>' +
-                '<div class="col-xs-11" onclick="goToRoute(\'{id}\');">' +
+                '<div class="col-xs-11" onclick="goToRoute(\'{id}\');" style="cursor:pointer;">' +
                     '<div class="notification-title">{title}</div>' +
                     '<div class="notification-body">{body}</div>' +
                 '</div>' +
@@ -270,6 +270,7 @@ var Notifications = (function(options) {
         	if(notification.url != null && notification.url != ""){
         		window.location = notification.url;
         	}
+        	markAsRead(id);
     }
     
     this.renderHeader = function(headerSelector){
