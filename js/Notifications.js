@@ -104,9 +104,11 @@ var Notifications = (function(options) {
 			data: {all:all},
 			dataType: "json",
         		complete: function(){
-    				self.currentTimer = setTimeout(function() {
-            			self.poll(all,1)
-        			}, self.opts.pollInterval);
+        			if(self.opts.pollInterval != false){
+        				self.currentTimer = setTimeout(function() {
+                			self.poll(all,1)
+            			}, self.opts.pollInterval);
+        			}
         		},
         		timeout: self.opts.xhrTimeout
         	})
