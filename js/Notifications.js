@@ -22,9 +22,10 @@ var Notifications = (function(options) {
 //    		toastr.options.onHidden = function() {
 //    			console.log('goodbye');
 //    		}
-//    		toastr.options.onclick = function(e) { 
+    		toastr.options.onclick = function(e) { 
 //    			console.log('clicked');
-//    		}
+    			goToRoute(notification.id);
+    		}
 //    		toastr.options.onCloseClick = function() { 
 //    			console.log('close button clicked');
 //    		}
